@@ -25,36 +25,52 @@ import matplotlib # Création de graphiques
 import sys # Messages d'erreur
 
 class xlsDB:
-    def __init__(self, fileName="pop-16ans-dipl6817"):
+    def __init__(self, sheet=10, fileName="pop-16ans-dipl6817"):
         """
         Initialisation de la base de données xls (ouverture et extraction)
         
         PARAMETRES :
         --------
+        sheet : int
+            Index de la feuille de tableur à extraire
+                default = 10 (11-1)
+        
         fileName : str
             nom du fichier xls à ouvrir
                 default = "pop-16ans-dipl6817"
         """
-        pass
+        # Ouverture fichier xls
+        with xlrd.open_workbook(fileName+".xls", on_demand=True) as file: 
+            self.Data = file.get_sheet(sheet)
+
+        # Extraction titre feuille
+        self.Title = self.Data.cell_value(0,0)
+        print("Test :",self.Title)
 
     def DiagrammeBarres(self):
         """
         
         """
+
         pass
 
     def GrapheAxes(self):
         """
         
         """
+
         pass
     
     def DiagrammeCirculaire(self):
         """
         
         """
+
         pass
 
 # Tests des fonctions
 if __name__=='__main__':
-    pass
+    # feuille = int(input("feuille à ouvrir : "))
+    # xls = xlsDB(feuille)
+
+    xls = xlsDB()
