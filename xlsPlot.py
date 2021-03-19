@@ -47,23 +47,80 @@ class xlsDB:
         self.Title = self.Data.cell_value(0,0)
         print("Test :",self.Title)
 
-    def DiagrammeBarres(self):
+    def DiagrammeBarres(self, DataColumn=3, KeyColumn=2, Start=24, Stop="auto"):
         """
-        
-        """
+        Permet de créer des diagrammes en barres pour comparer les éléments d'une seule colonne
 
-        pass
+        
+        PARAMETRES :
+        --------
+        Commencent tous à 0
+        --------
+        DataColumn : int
+            index de la colonne contenant les valeurs à comparer
+                default = 3
+
+        KeyColumn : int
+            index de la colonne contenant les clés (noms) liées aux données
+                default = 2
+        
+        Start : int
+            index de la ligne de départ (inclue) des éléments à étudier
+                default = 24
+        
+        Stop : int || str
+            index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
+                default = "auto"
+
+        SORTIE :
+        --------
+        ExitCode : int
+            0 : Erreur lors de l'exécution
+            1 : Exécution réussie
+        """
+        if Stop=="auto":   
+            DataList = self.Data.col_values(DataColumn, Start)
+        else:
+            KeyList = self.Data.col_values(KeyColumn, Start, Stop)
 
     def GrapheAxes(self):
         """
+        ...
         
+        PARAMETRES :
+        --------
+        key : str
+            clé à rechercher
+
+        dataID : str
+            nom de colonne de la donnée souhaitée liée à la clé recherchée (si trouvée)
+
+        SORTIE :
+        --------
+        data : int ou str
+            donnée liée, integer si possible, sinon en string
+            (renvoie 0 si clée non trouvée ou si donnée non trouvée)
         """
 
         pass
     
     def DiagrammeCirculaire(self):
         """
+        ...
         
+        PARAMETRES :
+        --------
+        key : str
+            clé à rechercher
+
+        dataID : str
+            nom de colonne de la donnée souhaitée liée à la clé recherchée (si trouvée)
+
+        SORTIE :
+        --------
+        data : int ou str
+            donnée liée, integer si possible, sinon en string
+            (renvoie 0 si clée non trouvée ou si donnée non trouvée)
         """
 
         pass
