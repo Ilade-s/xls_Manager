@@ -140,7 +140,7 @@ class xlsDB:
         # Affichage diagramme
         plt.show()
     
-    def DiagrammeCirculaire(self, DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
+    def DiagrammeCirculaire(self, DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(15.0,15.0)):
         """
         Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
 
@@ -182,10 +182,7 @@ class xlsDB:
         
         # Extraction données de la feuille
         DataList = self.Data.col_values(DataColumn, Start, Stop)
-        KeyList = self.Data.col_values(KeyColumn, Start, Stop)
-        
-
-        
+        KeyList = self.Data.col_values(KeyColumn, Start, Stop)   
 
 # Tests des fonctions
 if __name__=='__main__':
