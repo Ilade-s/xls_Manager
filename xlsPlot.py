@@ -17,7 +17,7 @@ UTILISATION :
 FONCTIONS :
 ----------
     - DiagrammeBarres : Utlisant une seule colonne, va créer une graphique en barres
-    - GrapheAxes : utlisant deux colonnes (x et y) créé un graphique y(x)
+    - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
     - DiagrammeCirculaire : Utlisant une seule colonne, permet de comparer leur part dans la somme avec un camembert
 """
 
@@ -141,26 +141,98 @@ class xlsDB:
         # Affichage diagramme
         plt.show()
 
-    def GrapheAxes(self):
+    def DiagrammeMultiBarres(self, SortedElements=(False, False), DataColumns=(3), KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
-        ...
+        Permet de créer des diagrammes en barres pour comparer les éléments d'une seule colonne
+
         
         PARAMETRES :
         --------
-        key : str
-            clé à rechercher
+        Attention, cette focntion assume que le tableau est sous forme verticale et ne supportera pas les formes horizonales
+        --------
+        SortedElements : tuple(bool, bool)
+            SortedElements[0] :
+                Indique si les données doivent être triées ou non (ordre croissant)
+                    default = False
+            SortedElements[1] :
+                Indique si les données doivent être triées en ordre croissant (False) ou décroissant (True)
+                    default = False
 
-        dataID : str
-            nom de colonne de la donnée souhaitée liée à la clé recherchée (si trouvée)
+        DataColumn : int
+            index de la colonne contenant les valeurs à comparer
+                default = 3
+
+        KeyColumn : int
+            index de la colonne contenant les clés (noms) liées aux données
+                default = 2
+        
+        Start : int
+            index de la ligne de départ (inclue) des éléments à étudier
+                default = 24
+        
+        Stop : int || None
+            index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
+                default = "auto"
+
+        TitleOffset : int
+            Indique l'écart entre le Start et le titre (permet de trouver les titres d'axes)
+                default = 2
+
+        figSize : tuple(float, float)
+            Indique la taille du diagramme (x, y), cepandant, mettre des tailles en dessous de 20 n'aura aucun effet (constained_layout activé)
+                default (recommandé pour lecture) = (20.0,20.0)
 
         SORTIE :
         --------
-        data : int ou str
-            donnée liée, integer si possible, sinon en string
-            (renvoie 0 si clée non trouvée ou si donnée non trouvée)
-        """
+        None
+        """  
+        # Vérification des paramètres
+        assert DataColumn!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
+        assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
+        assert SortedElements[0] or not SortedElements[0], "Le paramètre SortedElements est invalide (non boléen)"
+        assert SortedElements[1] or not SortedElements[1], "Le paramètre SortedElements est invalide (non boléen)"
+        
+        # Extraction données de la feuille
+        DataList = self.Data.col_values(DataColumn, Start, Stop)
+        KeyList = self.Data.col_values(KeyColumn, Start, Stop)
 
-        pass
+        # Arrondi des valeurs des données
+        DataList =  [round(float(i)) for i in DataList]
+
+        # Vidage cases vides
+        DataList = [DataList.pop(DataList.index(i)) for i in DataList if i!=""]
+        KeyList = [KeyList.pop(KeyList.index(i)) for i in KeyList if i!=""]
+
+        if SortedElements[0]:
+            # Cration liste éléments
+            ElementList = [[DataList[i], KeyList[i]] for i in range(len(DataList))]
+
+            # Tri des éléments par données
+            def getKey(element):
+                return element[0]
+
+            ElementList.sort(key=getKey, reverse=SortedElements[1])
+
+            # Copie dans listes DataList et KeyList
+            DataList = [e[0] for e in ElementList]
+            KeyList = [e[1] for e in ElementList]
+
+        # Création figure
+        plt.figure(figsize=figSize, constrained_layout=True)
+
+        width = 2
+        x = [i*4 for i in range(len(DataList))]
+
+        plt.bar(x, DataList, width)
+
+        # Ajout clés et titres
+        plt.xticks(x, KeyList, rotation=90)
+        plt.title(self.Title)
+        plt.xlabel(self.Data.cell_value(Start-TitleOffset, KeyColumn)) # Titre des clés
+        plt.ylabel(self.Data.cell_value(Start-TitleOffset, DataColumn)) # Titre des données
+        
+        # Affichage diagramme
+        plt.show()
     
     def DiagrammeCirculaire(self, DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """

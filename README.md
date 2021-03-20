@@ -10,5 +10,5 @@ MODULES UTILISES (A INSTALLER) :
 FONCTIONS :
 ----------
     - DiagrammeBarres : Utlisant une seule colonne, va créer une graphique en barres
-    - GrapheAxes : utlisant deux colonnes (x et y) créé un graphique y(x)
+    - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
     - DiagrammeCirculaire : Utlisant une seule colonne, permet de comparer leur part dans la somme avec un camembert
