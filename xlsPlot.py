@@ -16,8 +16,9 @@ UTILISATION :
 
 FONCTIONS :
 ----------
-    - GrapheBarres : utlisant une seule colonne, va créer une graphique en barres
-    - func2
+    - DiagrammeBarres : Utlisant une seule colonne, va créer une graphique en barres
+    - GrapheAxes : utlisant deux colonnes (x et y) créé un graphique y(x)
+    - DiagrammeCirculaire : Utlisant une seule colonne, permet de comparer leur part dans la somme avec un camembert
 """
 
 import xlrd # Module de gestion mère xls

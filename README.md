@@ -9,6 +9,6 @@ MODULES UTILISES (A INSTALLER) :
     - matplotlib (graphiques)
 FONCTIONS :
 ----------
-    - func1
-    - func2
-    - func3
+    - DiagrammeBarres : Utlisant une seule colonne, va créer une graphique en barres
+    - GrapheAxes : utlisant deux colonnes (x et y) créé un graphique y(x)
+    - DiagrammeCirculaire : Utlisant une seule colonne, permet de comparer leur part dans la somme avec un camembert
