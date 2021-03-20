@@ -67,9 +67,9 @@ class xlsDB:
                 Indique l'index de la colonne de données servant à trier les éléments (index dans DataColumns)
                     default = 0
 
-        DataColumn : int
-            index de la colonne contenant les valeurs à comparer
-                default = 3
+        DataColumns : list[int]
+            liste des index de colonnes contenant les valeurs à comparer
+                default = [3]
 
         KeyColumn : int
             index de la colonne contenant les clés (noms) liées aux données
