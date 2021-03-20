@@ -1,5 +1,5 @@
 """
-xlsPlot
+xlsPlot (contient la classe xlsDB avec initialisation et fonctions)
 -------
 Module de création de plots (matplotlib) à partir de données d'un fichier xls
 ----------
@@ -141,7 +141,6 @@ class xlsDB:
         # Affichage diagramme
         plt.show()
 
-
     def GrapheAxes(self):
         """
         ...
@@ -163,26 +162,52 @@ class xlsDB:
 
         pass
     
-    def DiagrammeCirculaire(self):
+    def DiagrammeCirculaire(self, DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
-        ...
-        
+        Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
+
         PARAMETRES :
         --------
-        key : str
-            clé à rechercher
+        Attention, cette focntion assume que le tableau est sous forme verticale et ne supportera pas les formes horizonales
+        --------
+        DataColumn : int
+            index de la colonne contenant les valeurs à comparer
+                default = 3
 
-        dataID : str
-            nom de colonne de la donnée souhaitée liée à la clé recherchée (si trouvée)
+        KeyColumn : int
+            index de la colonne contenant les clés (noms) liées aux données
+                default = 2
+        
+        Start : int
+            index de la ligne de départ (inclue) des éléments à étudier
+                default = 24
+        
+        Stop : int || None
+            index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
+                default = "auto"
+
+        TitleOffset : int
+            Indique l'écart entre le Start et le titre (permet de trouver les titres d'axes)
+                default = 2
+
+        figSize : tuple(float, float)
+            Indique la taille du diagramme (x, y), cepandant, mettre des tailles en dessous de 20 n'aura aucun effet (constained_layout activé)
+                default (recommandé pour lecture) = (20.0,20.0)
 
         SORTIE :
         --------
-        data : int ou str
-            donnée liée, integer si possible, sinon en string
-            (renvoie 0 si clée non trouvée ou si donnée non trouvée)
-        """
+        None
+        """  
+        # Vérification des paramètres
+        assert DataColumn!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
+        assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
+        
+        # Extraction données de la feuille
+        DataList = self.Data.col_values(DataColumn, Start, Stop)
+        KeyList = self.Data.col_values(KeyColumn, Start, Stop)
+        
 
-        pass
+        
 
 # Tests des fonctions
 if __name__=='__main__':
