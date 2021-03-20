@@ -48,14 +48,14 @@ class xlsDB:
         self.Title = self.Data.cell_value(0,0)
         print("Test :",self.Title)
 
-    def DiagrammeBarres(self, SortedElements=(False, False), DataColumn=3, KeyColumn=2, Start=24, Stop=None, figSize=(30.0,30.0)):
+    def DiagrammeBarres(self, SortedElements=(False, False), DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
         Permet de créer des diagrammes en barres pour comparer les éléments d'une seule colonne
 
         
         PARAMETRES :
         --------
-        DataColumn et KeyColumn doivent commmencer par
+        Attention, cette focntion assume que le tableau est sous forme verticale et ne supportera pas les formes horizonales
         --------
         SortedElements : tuple(bool, bool)
             SortedElements[0] :
@@ -77,13 +77,17 @@ class xlsDB:
             index de la ligne de départ (inclue) des éléments à étudier
                 default = 24
         
-        Stop : int || str
+        Stop : int || None
             index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
                 default = "auto"
 
+        TitleOffset : int
+            Indique l'écart entre le Start et le titre (permet de trouver les titres d'axes)
+                default = 2
+
         figSize : tuple(float, float)
-            Indique la taille du diagramme (x, y)
-                default (recommandé pour lecture) = (30.0,30.0)
+            Indique la taille du diagramme (x, y), cepandant, mettre des tailles en dessous de 20 n'aura aucun effet (constained_layout activé)
+                default (recommandé pour lecture) = (20.0,20.0)
 
         SORTIE :
         --------
@@ -121,15 +125,17 @@ class xlsDB:
             KeyList = [e[1] for e in ElementList]
 
         # Création figure
-        plt.figure(figsize=figSize)
+        plt.figure(figsize=figSize, constrained_layout=True)
 
-        width = 3
-        x = [i*5 for i in range(len(DataList))]
+        width = 2
+        x = [i*4 for i in range(len(DataList))]
 
         plt.bar(x, DataList, width)
 
         plt.xticks(x, KeyList, rotation=90)
-
+        plt.title(self.Title)
+        plt.xlabel(self.Data.cell_value(Start-TitleOffset, KeyColumn)) # Titre des clés
+        plt.ylabel(self.Data.cell_value(Start-TitleOffset, DataColumn)) # Titre des données
         # Affichage diagramme
         # print(DataList)
 
