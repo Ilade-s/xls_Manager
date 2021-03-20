@@ -7,6 +7,7 @@ MODULES UTILISES (A INSTALLER) :
 ----------
     - xlrd (lecture de fichier xls)
     - matplotlib (graphiques)
+    - panda (DataFrame : pour données graphiques)
 FONCTIONS :
 ----------
     - DiagrammeBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données

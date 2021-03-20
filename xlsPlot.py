@@ -22,7 +22,7 @@ FONCTIONS :
 
 import xlrd # Module de gestion mère xls
 import matplotlib.pyplot as plt # Création de graphiques
-import pandas as pd # Pour DataFrame
+import pandas as pd # Pour utilisation DataFrame (graphiques)
 
 class xlsDB:
     def __init__(self, sheet=10, fileName="pop-16ans-dipl6817"):
