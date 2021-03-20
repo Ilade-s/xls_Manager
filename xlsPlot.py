@@ -132,13 +132,13 @@ class xlsDB:
 
         plt.bar(x, DataList, width)
 
+        # Ajout clés et titres
         plt.xticks(x, KeyList, rotation=90)
         plt.title(self.Title)
         plt.xlabel(self.Data.cell_value(Start-TitleOffset, KeyColumn)) # Titre des clés
         plt.ylabel(self.Data.cell_value(Start-TitleOffset, DataColumn)) # Titre des données
+        
         # Affichage diagramme
-        # print(DataList)
-
         plt.show()
 
 
