@@ -22,7 +22,7 @@ FONCTIONS :
 """
 
 import xlrd # Module de gestion mère xls
-import matplotlib # Création de graphiques
+import matplotlib.pyplot as plt # Création de graphiques
 import sys # Messages d'erreur
 
 class xlsDB:
@@ -48,15 +48,23 @@ class xlsDB:
         self.Title = self.Data.cell_value(0,0)
         print("Test :",self.Title)
 
-    def DiagrammeBarres(self, DataColumn=3, KeyColumn=2, Start=24, Stop="auto"):
+    def DiagrammeBarres(self, SortedElements=(False, False), DataColumn=3, KeyColumn=2, Start=24, Stop=None, figSize=(30.0,30.0)):
         """
         Permet de créer des diagrammes en barres pour comparer les éléments d'une seule colonne
 
         
         PARAMETRES :
         --------
-        Commencent tous à 0
+        DataColumn et KeyColumn doivent commmencer par
         --------
+        SortedElements : tuple(bool, bool)
+            SortedElements[0] :
+                Indique si les données doivent être triées ou non (ordre croissant)
+                    default = False
+            SortedElements[1] :
+                Indique si les données doivent être triées en ordre croissant (False) ou décroissant (True)
+                    default = False
+
         DataColumn : int
             index de la colonne contenant les valeurs à comparer
                 default = 3
@@ -73,16 +81,60 @@ class xlsDB:
             index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
                 default = "auto"
 
+        figSize : tuple(float, float)
+            Indique la taille du diagramme (x, y)
+                default (recommandé pour lecture) = (30.0,30.0)
+
         SORTIE :
         --------
-        ExitCode : int
-            0 : Erreur lors de l'exécution
-            1 : Exécution réussie
-        """
-        if Stop=="auto":   
-            DataList = self.Data.col_values(DataColumn, Start)
-        else:
-            KeyList = self.Data.col_values(KeyColumn, Start, Stop)
+        None
+        """  
+        # Vérification des paramètres
+        assert DataColumn!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
+        assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
+        assert SortedElements[0] or not SortedElements[0], "Le paramètre SortedElements est invalide (non boléen)"
+        assert SortedElements[1] or not SortedElements[1], "Le paramètre SortedElements est invalide (non boléen)"
+        
+        # Extraction données de la feuille
+        DataList = self.Data.col_values(DataColumn, Start, Stop)
+        KeyList = self.Data.col_values(KeyColumn, Start, Stop)
+
+        # Arrondi des valeurs des données
+        DataList =  [round(float(i)) for i in DataList]
+
+        # Vidage cases vides
+        DataList = [DataList.pop(DataList.index(i)) for i in DataList if i!=""]
+        KeyList = [KeyList.pop(KeyList.index(i)) for i in KeyList if i!=""]
+
+        if SortedElements[0]:
+            # Cration liste éléments
+            ElementList = [[DataList[i], KeyList[i]] for i in range(len(DataList))]
+
+            # Tri des éléments par données
+            def getKey(element):
+                return element[0]
+
+            ElementList.sort(key=getKey, reverse=SortedElements[1])
+
+            # Copie dans listes DataList et KeyList
+            DataList = [e[0] for e in ElementList]
+            KeyList = [e[1] for e in ElementList]
+
+        # Création figure
+        plt.figure(figsize=figSize)
+
+        width = 3
+        x = [i*5 for i in range(len(DataList))]
+
+        plt.bar(x, DataList, width)
+
+        plt.xticks(x, KeyList, rotation=90)
+
+        # Affichage diagramme
+        # print(DataList)
+
+        plt.show()
+
 
     def GrapheAxes(self):
         """
@@ -132,3 +184,5 @@ if __name__=='__main__':
     # xls = xlsDB(feuille)
 
     xls = xlsDB()
+
+    xls.DiagrammeBarres((True,True))
