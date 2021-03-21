@@ -26,6 +26,7 @@ import xlrd # Module de gestion mère xls
 import matplotlib.pyplot as plt # Création de graphiques
 import pandas as pd # Pour utilisation DataFrame (graphiques)
 import sys # Messages d'erreur
+import numpy as np
 
 class xlsDB:
     def __init__(self, sheet=10, fileName="pop-16ans-dipl6817"):
@@ -90,7 +91,7 @@ class xlsDB:
                 default = 2
 
         figSize : tuple(float, float)
-            Indique la taille du diagramme (x, y), cepandant, mettre des tailles en dessous de 20 n'aura aucun effet (constained_layout activé)
+            Indique la taille du diagramme (x, y)
                 default (recommandé pour lecture) = (20.0,20.0)
 
         SORTIE :
@@ -142,7 +143,7 @@ class xlsDB:
         # Affichage diagramme
         plt.show()
     
-    def DiagrammeCirculaire(self, DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(15.0,15.0)):
+    def DiagrammeCirculaire(self, DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
         Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
 
@@ -171,7 +172,7 @@ class xlsDB:
                 default = 2
 
         figSize : tuple(float, float)
-            Indique la taille du diagramme (x, y), cepandant, mettre des tailles en dessous de 20 n'aura aucun effet (constained_layout activé)
+            Indique la taille du diagramme (x, y)
                 default (recommandé pour lecture) = (20.0,20.0)
 
         SORTIE :
@@ -181,12 +182,31 @@ class xlsDB:
         # Vérification des paramètres
         assert DataColumn!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
         assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
-        
+
         # Extraction données de la feuille
         DataList = self.Data.col_values(DataColumn, Start, Stop)
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
 
-        plt.pie(DataList, labels=KeyList)   
+        # Création graphique
+        def func(pct, allvals):
+            absolute = int(pct/100.*np.sum(allvals))
+            return "{:.1f}%\n({:d} pers.)".format(pct, absolute)
+
+        fig, ax = plt.subplots(figsize=figSize, subplot_kw=dict(aspect="equal"))
+
+        ax.pie(DataList, labels=KeyList, autopct=lambda pct: func(pct, DataList))   
+        
+        # Ajout titre graphique
+        plt.title(self.Title)
+
+
+        # Création légende graphique
+        ax.legend(title=self.Data.cell_value(Start-TitleOffset, KeyColumn),
+          loc="best",
+          bbox_to_anchor=(1, 0, 0.5, 1))
+
+        # Affichage graphique
+        plt.show()
 
 # Tests des fonctions
 if __name__=='__main__':
@@ -205,11 +225,13 @@ if __name__=='__main__':
 
     if Choix=="1":
         print("Test DiagrammeMultiBarres :")
-        xls.DiagrammeMultiBarres((True,True,0),[3,5])
+        # Affichage hommes et femmes sans diplôme, de 16 à 24 ans
+        xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
     
     elif Choix=="2":
         print("Test DiagrammeCirculaire :")
-        xls.DiagrammeCirculaire()
+        # Affichage données de 15 (inclu) à 20 (exclu)
+        xls.DiagrammeCirculaire(Stop=20) 
     
     else:
         print("Choix incorrect")
