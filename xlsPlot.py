@@ -11,6 +11,9 @@ MODULES UTILISES (A INSTALLER) :
 ----------
     - xlrd (lecture de fichier xls)
     - matplotlib (graphiques)
+    - panda (DataFrame : graphique)
+    - numpy (Calculs : graphique)
+    (- sys : Messages d'erreur -included by default in python-)
 
 UTILISATION :
 ----------
@@ -26,7 +29,7 @@ import xlrd # Module de gestion mère xls
 import matplotlib.pyplot as plt # Création de graphiques
 import pandas as pd # Pour utilisation DataFrame (graphiques)
 import sys # Messages d'erreur
-import numpy as np
+import numpy as np # Calculs shares DiagrammeCirculaire
 
 class xlsDB:
     def __init__(self, sheet=10, fileName="pop-16ans-dipl6817"):

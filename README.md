@@ -8,6 +8,8 @@ MODULES UTILISES (A INSTALLER) :
     - xlrd (lecture de fichier xls)
     - matplotlib (graphiques)
     - panda (DataFrame : pour données graphiques)
+    - numpy (Calculs : graphique)
+    (- sys : Messages d'erreur -included by default in python-)
 FONCTIONS :
 ----------
     - DiagrammeBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
