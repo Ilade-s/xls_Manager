@@ -21,16 +21,14 @@ UTILISATION :
 
 FONCTIONS :
 ----------
-    - DiagrammeBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
-    - DiagrammeCirculaire : Utlisant une seule colonne, permet de comparer leur part dans la somme avec un camembert
+    - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
+    - DiagrammeMultiCirculaire : Utlisant une ou plusieurs colonnes de données, permet de les comparer dans un ou plusieurs camembert (un pour chaque colonne de données)
 """
-
 import xlrd # Module de gestion mère xls
 import matplotlib.pyplot as plt # Création de graphiques
 import pandas as pd # Pour utilisation DataFrame (graphiques)
 import sys # Messages d'erreur
-import numpy as np
-from xlrd.formula import colname # Calculs shares DiagrammeCirculaire
+import numpy as np # Calculs shares DiagrammeCirculaire
 
 class xlsDB:
     def __init__(self, sheet=10, fileName="pop-16ans-dipl6817", TitleCell=(0,0)):
@@ -123,7 +121,7 @@ class xlsDB:
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
 
-        # Arrondi des valeurs des données
+        # Arrondi des valeurs des données et clés
         DataLists =  [[round(float(i)) for i in DataList] for DataList in DataLists]
         try:    
             KeyList = [str(int(float(k))) for k in KeyList]
@@ -167,7 +165,7 @@ class xlsDB:
         # Affichage diagramme
         plt.show()
     
-    def DiagrammeCirculaire(self, DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
+    def DiagrammeMultiCirculaire(self, DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
         Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
 
@@ -214,6 +212,28 @@ class xlsDB:
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
 
+        # Arrondi des valeurs des données et clés
+        DataLists =  [[round(float(i)) for i in DataList] for DataList in DataLists]
+        try:    
+            KeyList = [str(int(float(k))) for k in KeyList]
+        except:
+            pass
+
+        # Création liste éléments (non merged)
+        ElementList = [[KeyList[i]]+[DataList[i] for DataList in DataLists] for i in range(len(DataLists[0]))]
+        
+        # Merge data with same key (fix) with a dictionary
+        KeyList = list(set(KeyList))
+        ElementDict = {}
+        for key in KeyList:
+            ElementDict[key] = [sum([e[c+1] for e in ElementList if key in e]) for c in range(len(DataColumns))]
+
+        # Reconversion in List
+        ElementList = [[key]+ElementDict[key] for key in KeyList]
+
+        # Data recovery from ElementList
+        DataLists = [[e[1+c] for e in ElementList] for c in range(len(DataColumns))]
+        
         # Calcul nombre de lignes et colonnes
         if len(DataColumns)<=2:
             rows = 1
@@ -223,17 +243,19 @@ class xlsDB:
             cols = 2
 
         # Création graphique
-        fig, ax = plt.subplots(figsize=figSize, subplot_kw=dict(aspect="equal"), nrows=rows, ncols=cols)
+        fig, ax = plt.subplots(figsize=figSize, subplot_kw=dict(aspect="equal"), nrows=rows, ncols=cols, constrained_layout=True)
 
         # Création pie charts + titres individuels
         def func(pct, allvals):
             absolute = int(pct/100.*np.sum(allvals))
             return "{:.1f}%\n({:d} pers.)".format(pct, absolute)
 
+        c = 0
         for row in range(rows):
             for col in range(cols):
-                ax[row][col].pie(DataLists[row+col], labels=KeyList, autopct=lambda pct: func(pct, DataLists[row+col]))   
-                ax[row][col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[row+col]))
+                ax[row][col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
+                ax[row][col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
+                c += 1
 
         # Ajout titre graphique
         plt.suptitle(self.Title)
@@ -241,7 +263,8 @@ class xlsDB:
         # Création légende graphique
         plt.legend(title=self.Data.cell_value(Start-TitleOffset, KeyColumn),
           loc="best",
-          bbox_to_anchor=(1, 0, 0.5, 1))
+          bbox_to_anchor=(1, 0, 0.5, 1),
+          labels=KeyList)
 
         # Affichage graphique
         plt.show()
@@ -256,7 +279,7 @@ if __name__=='__main__':
     print("Bienvenue dans mon programme/module de gestion et de visualisation de données au format xls")
     print("Vous pouvez lancer un test pour chacune de ces deux fonctions :")
     print("\t- 1 : DiagrammeMultiBarres")
-    print("\t- 2 : DiagrammeCirculaire")
+    print("\t- 2 : DiagrammeMultiCirculaire")
     print("=============================================")
 
     Choix = input("Choix (1 ou 2) : ")
@@ -269,8 +292,8 @@ if __name__=='__main__':
         #xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
     
     elif Choix=="2":
-        print("Test DiagrammeCirculaire :")
-        # Affichage données de 15 (inclu) à 20 (exclu)
+        print("Test DiagrammeMultiCirculaire :")
+        # Affichage données de 15 (inclu) à 20 (exclu) de quatres colonnes de données : 3,4,6,5
         xls.DiagrammeCirculaire(Stop=20, DataColumns=[3,4,6,5]) 
     
     else:
