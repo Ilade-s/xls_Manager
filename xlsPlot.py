@@ -111,19 +111,22 @@ class xlsDB:
         # Extraction données et clés de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
-
+        print(KeyList)
         # Arrondi des valeurs des données
         DataLists =  [[round(float(i)) for i in DataList] for DataList in DataLists]
-        KeyList = [str(int(float(k))) for k in KeyList]
+        try:    
+            KeyList = [str(int(float(k))) for k in KeyList]
+        except:
+            pass
 
         # Vidage cases vides
         DataLists = [
             [DataList.pop(DataList.index(i)) for i in DataList if i!=""]
             for DataList in DataLists]
-        KeyList = [KeyList.pop(KeyList.index(i)) for i in KeyList if i!=""]
-
+        KeyList = [i for i in KeyList if i!=""]
+        print(KeyList)
         # Création liste éléments (non merged)
-        ElementList = [[KeyList[i]]+[DataList[i] for DataList in DataLists] for i in range(len(KeyList))]
+        ElementList = [[[KeyList[i]]+[DataList[i] for DataList in DataLists]] for i in range(len(DataLists[0]))]
         
         # Merge data with same key (fix) with a dictionnary
         KeyList = list(set(KeyList))
@@ -237,8 +240,10 @@ if __name__=='__main__':
 
     if Choix=="1":
         print("Test DiagrammeMultiBarres :")
-        # Affichage hommes et femmes sans diplôme, de 16 à 24 ans
-        xls.DiagrammeMultiBarres((True,True,0),[3,5],0) 
+        # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par region
+        #xls.DiagrammeMultiBarres((True,True,0),[3,5],0) 
+        # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par département
+        xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
     
     elif Choix=="2":
         print("Test DiagrammeCirculaire :")
