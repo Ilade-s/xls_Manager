@@ -29,10 +29,11 @@ import xlrd # Module de gestion mère xls
 import matplotlib.pyplot as plt # Création de graphiques
 import pandas as pd # Pour utilisation DataFrame (graphiques)
 import sys # Messages d'erreur
-import numpy as np # Calculs shares DiagrammeCirculaire
+import numpy as np
+from xlrd.formula import colname # Calculs shares DiagrammeCirculaire
 
 class xlsDB:
-    def __init__(self, sheet=10, fileName="pop-16ans-dipl6817"):
+    def __init__(self, sheet=10, fileName="pop-16ans-dipl6817", TitleCell=(0,0)):
         """
         Initialisation de la base de données xls (ouverture et extraction)
         
@@ -45,13 +46,18 @@ class xlsDB:
         fileName : str
             nom du fichier xls à ouvrir
                 default = "pop-16ans-dipl6817"
+        
+        TitleCell : tuple(int,int)
+            coordonnées de la cellule contenant le titre de la feuille souhaité
+                default = (0,0)
         """
         # Ouverture fichier xls
         with xlrd.open_workbook(fileName+".xls", on_demand=True) as file: 
             self.Data = file.get_sheet(sheet)
 
         # Extraction titre feuille
-        self.Title = self.Data.cell_value(0,0)
+        (rowx, columnx) = TitleCell
+        self.Title = self.Data.cell_value(rowx,columnx)
 
     def DiagrammeMultiBarres(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
@@ -111,7 +117,7 @@ class xlsDB:
         # Extraction données et clés de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
-        print(KeyList)
+        
         # Arrondi des valeurs des données
         DataLists =  [[round(float(i)) for i in DataList] for DataList in DataLists]
         try:    
