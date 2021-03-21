@@ -169,6 +169,8 @@ class xlsDB:
         """
         Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
 
+        Si il y a trois colonnes de données à visualiser, lors de l'affichage, le subplot en bas à droite sera une copie de celui en bas à gauche 
+        
         PARAMETRES :
         --------
         Attention, cette fonction part du principe que le tableau est sous forme verticale et ne supportera pas les formes horizonales
@@ -256,12 +258,12 @@ class xlsDB:
                 for col in range(cols):
                     ax[row][col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
                     ax[row][col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
-                    c += 1
+                    if c<2: c += 1
         elif cols>1: #1x2
             for col in range(cols):
-                    ax[col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
-                    ax[col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
-                    c += 1
+                ax[col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
+                ax[col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
+                c += 1
         else: # 1x1
             ax.pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
             ax.set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
@@ -303,7 +305,7 @@ if __name__=='__main__':
     elif Choix=="2":
         print("Test DiagrammeMultiCirculaire :")
         # Affichage données de 15 (inclu) à 20 (exclu) de quatres colonnes de données : 3,4,6,5
-        xls.DiagrammeMultiCirculaire(Stop=20, DataColumns=[3,4]) 
+        xls.DiagrammeMultiCirculaire(Stop=20, DataColumns=[3,4,5]) 
     
     else:
         print("Choix incorrect")
