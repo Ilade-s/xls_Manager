@@ -251,11 +251,20 @@ class xlsDB:
             return "{:.1f}%\n({:d} pers.)".format(pct, absolute)
 
         c = 0
-        for row in range(rows):
+        if rows>1 and cols>1: # 2x2
+            for row in range(rows):
+                for col in range(cols):
+                    ax[row][col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
+                    ax[row][col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
+                    c += 1
+        elif cols>1: #1x2
             for col in range(cols):
-                ax[row][col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
-                ax[row][col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
-                c += 1
+                    ax[col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
+                    ax[col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
+                    c += 1
+        else: # 1x1
+            ax.pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
+            ax.set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
 
         # Ajout titre graphique
         plt.suptitle(self.Title)
@@ -294,7 +303,7 @@ if __name__=='__main__':
     elif Choix=="2":
         print("Test DiagrammeMultiCirculaire :")
         # Affichage données de 15 (inclu) à 20 (exclu) de quatres colonnes de données : 3,4,6,5
-        xls.DiagrammeCirculaire(Stop=20, DataColumns=[3,4,6,5]) 
+        xls.DiagrammeMultiCirculaire(Stop=20, DataColumns=[3,4]) 
     
     else:
         print("Choix incorrect")
