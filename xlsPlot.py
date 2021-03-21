@@ -3,7 +3,9 @@ xlsPlot (contient la classe xlsDB avec initialisation et fonctions)
 -------
 Module de création de plots (matplotlib) à partir de données d'un fichier xls
 ----------
-Module pouvant être utlisé dans d'autres programmes, utilisant matplotlib afin de créer des graphiques sur les données d'un fichier xls, lu avec le module xlrd
+- Module pouvant être utlisé dans d'autres programmes, utilisant matplotlib afin de créer des graphiques sur les données d'un fichier xls, lu avec le module xlrd
+
+- Si lancé en main, proposera de lancer un test de chaque fonction
 
 MODULES UTILISES (A INSTALLER) :
 ----------
@@ -23,6 +25,7 @@ FONCTIONS :
 import xlrd # Module de gestion mère xls
 import matplotlib.pyplot as plt # Création de graphiques
 import pandas as pd # Pour utilisation DataFrame (graphiques)
+import sys # Messages d'erreur
 
 class xlsDB:
     def __init__(self, sheet=10, fileName="pop-16ans-dipl6817"):
@@ -45,7 +48,6 @@ class xlsDB:
 
         # Extraction titre feuille
         self.Title = self.Data.cell_value(0,0)
-        print("Test :",self.Title)
 
     def DiagrammeMultiBarres(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
@@ -182,7 +184,9 @@ class xlsDB:
         
         # Extraction données de la feuille
         DataList = self.Data.col_values(DataColumn, Start, Stop)
-        KeyList = self.Data.col_values(KeyColumn, Start, Stop)   
+        KeyList = self.Data.col_values(KeyColumn, Start, Stop)
+
+        plt.pie(DataList, labels=KeyList)   
 
 # Tests des fonctions
 if __name__=='__main__':
@@ -190,5 +194,23 @@ if __name__=='__main__':
     # xls = xlsDB(feuille)
 
     xls = xlsDB()
+    print("=============================================")
+    print("Bienvenue dans mon programme/module de gestion et de visualisation de données au format xls")
+    print("Vous pouvez lancer un test pour chacune de ces deux fonctions :")
+    print("\t- 1 : DiagrammeMultiBarres")
+    print("\t- 2 : DiagrammeCirculaire")
+    print("=============================================")
 
-    xls.DiagrammeMultiBarres((True,True,0),[4,6])
+    Choix = input("Choix (1 ou 2) : ")
+
+    if Choix=="1":
+        print("Test DiagrammeMultiBarres :")
+        xls.DiagrammeMultiBarres((True,True,0),[3,5])
+    
+    elif Choix=="2":
+        print("Test DiagrammeCirculaire :")
+        xls.DiagrammeCirculaire()
+    
+    else:
+        print("Choix incorrect")
+        sys.exit("\tArrêt...")
