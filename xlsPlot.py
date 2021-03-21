@@ -51,6 +51,11 @@ class xlsDB:
             coordonnées de la cellule contenant le titre de la feuille souhaité
                 default = (0,0)
         """
+        # Vérification paramètres
+        for i in TitleCell:
+            assert i >= 0
+        assert sheet >= 0
+
         # Ouverture fichier xls
         with xlrd.open_workbook(fileName+".xls", on_demand=True) as file: 
             self.Data = file.get_sheet(sheet)
@@ -117,7 +122,7 @@ class xlsDB:
         # Extraction données et clés de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
-        
+
         # Arrondi des valeurs des données
         DataLists =  [[round(float(i)) for i in DataList] for DataList in DataLists]
         try:    
@@ -132,7 +137,7 @@ class xlsDB:
         # Création liste éléments (non merged)
         ElementList = [[KeyList[i]]+[DataList[i] for DataList in DataLists] for i in range(len(DataLists[0]))]
         
-        # Merge data with same key (fix) with a dictionnary
+        # Merge data with same key (fix) with a dictionary
         KeyList = list(set(KeyList))
         ElementDict = {}
         for key in KeyList:
@@ -162,7 +167,7 @@ class xlsDB:
         # Affichage diagramme
         plt.show()
     
-    def DiagrammeCirculaire(self, DataColumn=3, KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
+    def DiagrammeCirculaire(self, DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
         Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
 
@@ -170,9 +175,9 @@ class xlsDB:
         --------
         Attention, cette fonction part du principe que le tableau est sous forme verticale et ne supportera pas les formes horizonales
         --------
-        DataColumn : int
-            index de la colonne contenant les valeurs à comparer
-                default = 3
+        DataColumns : list[int]
+            liste des index de colonnes contenant les valeurs à comparer
+                default = [3]
 
         KeyColumn : int
             index de la colonne contenant les clés (noms) liées aux données
@@ -199,11 +204,12 @@ class xlsDB:
         None
         """  
         # Vérification des paramètres
-        assert DataColumn!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
+        for c in DataColumns:
+            assert c!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
         assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
 
         # Extraction données de la feuille
-        DataList = self.Data.col_values(DataColumn, Start, Stop)
+        DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
 
         # Création graphique
@@ -216,11 +222,11 @@ class xlsDB:
         ax.pie(DataList, labels=KeyList, autopct=lambda pct: func(pct, DataList))   
         
         # Ajout titre graphique
-        plt.title(self.Title)
-
+        plt.suptitle(self.Title)
+        plt.title([self.Data.cell_value(Start-TitleOffset, DataColumn) for DataColumn in DataColumns])
 
         # Création légende graphique
-        ax.legend(title=self.Data.cell_value(Start-TitleOffset, KeyColumn),
+        plt.legend(title=self.Data.cell_value(Start-TitleOffset, KeyColumn),
           loc="best",
           bbox_to_anchor=(1, 0, 0.5, 1))
 
