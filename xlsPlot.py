@@ -57,10 +57,9 @@ class xlsDB:
         """
         Permet de créer des diagrammes en barres pour comparer les éléments de une ou plusieurs colonnes de données
 
-        
         PARAMETRES :
         --------
-        Attention, cette focntion assume que le tableau est sous forme verticale et ne supportera pas les formes horizonales
+        Attention, cette fonction part du principe que le tableau est sous forme verticale et ne supportera pas les formes horizonales
         --------
         SortedElements : tuple(bool, bool, int)
             SortedElements[0] :
@@ -152,7 +151,7 @@ class xlsDB:
 
         PARAMETRES :
         --------
-        Attention, cette focntion assume que le tableau est sous forme verticale et ne supportera pas les formes horizonales
+        Attention, cette fonction part du principe que le tableau est sous forme verticale et ne supportera pas les formes horizonales
         --------
         DataColumn : int
             index de la colonne contenant les valeurs à comparer
