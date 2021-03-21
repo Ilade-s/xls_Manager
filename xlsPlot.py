@@ -120,13 +120,11 @@ class xlsDB:
             pass
 
         # Vidage cases vides
-        DataLists = [
-            [DataList.pop(DataList.index(i)) for i in DataList if i!=""]
-            for DataList in DataLists]
+        DataLists = [[i for i in DataList if i!=""] for DataList in DataLists]
         KeyList = [i for i in KeyList if i!=""]
-        print(KeyList)
+        
         # Création liste éléments (non merged)
-        ElementList = [[[KeyList[i]]+[DataList[i] for DataList in DataLists]] for i in range(len(DataLists[0]))]
+        ElementList = [[KeyList[i]]+[DataList[i] for DataList in DataLists] for i in range(len(DataLists[0]))]
         
         # Merge data with same key (fix) with a dictionnary
         KeyList = list(set(KeyList))
@@ -241,9 +239,9 @@ if __name__=='__main__':
     if Choix=="1":
         print("Test DiagrammeMultiBarres :")
         # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par region
-        #xls.DiagrammeMultiBarres((True,True,0),[3,5],0) 
+        xls.DiagrammeMultiBarres((True,True,0),[3,5],0) 
         # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par département
-        xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
+        #xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
     
     elif Choix=="2":
         print("Test DiagrammeCirculaire :")
