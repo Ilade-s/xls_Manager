@@ -115,6 +115,7 @@ class xlsDB:
 
         # Arrondi des valeurs des données
         DataLists =  [[round(float(i)) for i in DataList] for DataList in DataLists]
+        KeyList = [str(int(float(k))) for k in KeyList]
 
         # Vidage cases vides
         DataLists = [
@@ -122,16 +123,25 @@ class xlsDB:
             for DataList in DataLists]
         KeyList = [KeyList.pop(KeyList.index(i)) for i in KeyList if i!=""]
 
-        # Création liste éléments
+        # Création liste éléments (non merged)
         ElementList = [[KeyList[i]]+[DataList[i] for DataList in DataLists] for i in range(len(KeyList))]
         
+        # Merge data with same key (fix) with a dictionnary
+        KeyList = list(set(KeyList))
+        ElementDict = {}
+        for key in KeyList:
+            ElementDict[key] = [sum([e[c+1] for e in ElementList if key in e]) for c in range(len(DataColumns))]
+
+        # Reconversion in List
+        ElementList = [[key]+ElementDict[key] for key in KeyList]
+
         if SortedElements[0]:
             # Tri des éléments par données
             def getKey(element):
                 return element[SortedElements[2]+1]
 
             ElementList.sort(key=getKey, reverse=SortedElements[1])
-
+                
         # Création figure
         df = pd.DataFrame(ElementList,columns=[self.Data.cell_value(Start-TitleOffset, KeyColumn)]+[self.Data.cell_value(Start-TitleOffset, DataColumn) for DataColumn in DataColumns])
 
@@ -229,7 +239,7 @@ if __name__=='__main__':
     if Choix=="1":
         print("Test DiagrammeMultiBarres :")
         # Affichage hommes et femmes sans diplôme, de 16 à 24 ans
-        xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
+        xls.DiagrammeMultiBarres((True,True,0),[3,5],0) 
     
     elif Choix=="2":
         print("Test DiagrammeCirculaire :")
