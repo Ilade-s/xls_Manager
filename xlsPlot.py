@@ -178,6 +178,7 @@ class xlsDB:
         DataColumns : list[int]
             liste des index de colonnes contenant les valeurs à comparer
                 default = [3]
+                taille max : 4 éléments
 
         KeyColumn : int
             index de la colonne contenant les clés (noms) liées aux données
@@ -207,23 +208,35 @@ class xlsDB:
         for c in DataColumns:
             assert c!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
         assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
+        assert len(DataColumns) <= 4, "Erreur, le nombre de colonnes de données ne peut dépasser 4"
 
         # Extraction données de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
         KeyList = self.Data.col_values(KeyColumn, Start, Stop)
 
+        # Calcul nombre de lignes et colonnes
+        if len(DataColumns)<=2:
+            rows = 1
+            cols = len(DataColumns)
+        else:
+            rows = 2
+            cols = 2
+
         # Création graphique
+        fig, ax = plt.subplots(figsize=figSize, subplot_kw=dict(aspect="equal"), nrows=rows, ncols=cols)
+
+        # Création pie charts + titres individuels
         def func(pct, allvals):
             absolute = int(pct/100.*np.sum(allvals))
             return "{:.1f}%\n({:d} pers.)".format(pct, absolute)
 
-        fig, ax = plt.subplots(figsize=figSize, subplot_kw=dict(aspect="equal"))
+        for row in range(rows):
+            for col in range(cols):
+                ax[row][col].pie(DataLists[row+col], labels=KeyList, autopct=lambda pct: func(pct, DataLists[row+col]))   
+                ax[row][col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[row+col]))
 
-        ax.pie(DataList, labels=KeyList, autopct=lambda pct: func(pct, DataList))   
-        
         # Ajout titre graphique
         plt.suptitle(self.Title)
-        plt.title([self.Data.cell_value(Start-TitleOffset, DataColumn) for DataColumn in DataColumns])
 
         # Création légende graphique
         plt.legend(title=self.Data.cell_value(Start-TitleOffset, KeyColumn),
@@ -258,7 +271,7 @@ if __name__=='__main__':
     elif Choix=="2":
         print("Test DiagrammeCirculaire :")
         # Affichage données de 15 (inclu) à 20 (exclu)
-        xls.DiagrammeCirculaire(Stop=20) 
+        xls.DiagrammeCirculaire(Stop=20, DataColumns=[3,4,6,5]) 
     
     else:
         print("Choix incorrect")
