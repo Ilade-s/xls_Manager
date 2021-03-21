@@ -12,5 +12,5 @@ MODULES UTILISES (A INSTALLER) :
     (- sys : Messages d'erreur -included by default in python-)
 FONCTIONS :
 ----------
-    - DiagrammeBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
+    - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
     - DiagrammeCirculaire : Utlisant une seule colonne, permet de comparer leur part dans la somme avec un camembert
