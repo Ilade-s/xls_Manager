@@ -280,7 +280,7 @@ class xlsDB:
                 for col in range(cols):
                     ax[row][col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
                     ax[row][col].set_title(self.Data.cell_value(Start-TitleOffset, DataColumns[c]))
-                    if c<=2: c += 1
+                    if c<len(DataColumns)-1: c += 1
         elif cols>1: #1x2
             for col in range(cols):
                 ax[col].pie(DataLists[c], autopct=lambda pct: func(pct, DataLists[c]))   
