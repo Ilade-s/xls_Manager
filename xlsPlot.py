@@ -222,7 +222,8 @@ class xlsDB:
         assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
         assert SortedElements[0] or not SortedElements[0], "Le paramètre SortedElements[0] est invalide (non boléen)"
         assert SortedElements[1] or not SortedElements[1], "Le paramètre SortedElements[1] est invalide (non boléen)"
-        DataColumns = DataColumns[:4] # limit of 4 data column to be displayed
+        if len(DataColumns)>4:    
+            DataColumns = DataColumns[:4] # limit of 4 data column to be displayed
 
         # Extraction données de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
