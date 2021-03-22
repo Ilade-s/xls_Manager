@@ -72,7 +72,7 @@ class xlsDB:
         --------
         SortedElements : tuple(bool, bool, int)
             SortedElements[0] :
-                Indique si les données doivent être triées ou non (ordre croissant)
+                Indique si les données doivent être triées ou non
                     default = False
             SortedElements[1] :
                 Indique si les données doivent être triées en ordre croissant (False) ou décroissant (True)
@@ -114,8 +114,8 @@ class xlsDB:
             assert c!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
         assert SortedElements[2]<=len(DataColumns), "Erreur : l'index de la colonne choisie n'existe pas"
         assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
-        assert SortedElements[0] or not SortedElements[0], "Le paramètre SortedElements est invalide (non boléen)"
-        assert SortedElements[1] or not SortedElements[1], "Le paramètre SortedElements est invalide (non boléen)"
+        assert SortedElements[0] or not SortedElements[0], "Le paramètre SortedElements[0] est invalide (non boléen)"
+        assert SortedElements[1] or not SortedElements[1], "Le paramètre SortedElements[1] est invalide (non boléen)"
         
         # Extraction données et clés de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
@@ -144,8 +144,8 @@ class xlsDB:
         # Reconversion in List
         ElementList = [[key]+ElementDict[key] for key in KeyList]
 
+        # Tri des éléments par données
         if SortedElements[0]:
-            # Tri des éléments par données
             def getKey(element):
                 return element[SortedElements[2]+1]
 
@@ -165,7 +165,7 @@ class xlsDB:
         # Affichage diagramme
         plt.show()
     
-    def DiagrammeMultiCirculaire(self, DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
+    def DiagrammeMultiCirculaire(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0,20.0)):
         """
         Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
 
@@ -175,6 +175,17 @@ class xlsDB:
         --------
         Attention, cette fonction part du principe que le tableau est sous forme verticale et ne supportera pas les formes horizonales
         --------
+        SortedElements : tuple(bool, bool, int)
+            SortedElements[0] :
+                Indique si les données doivent être triées ou non
+                    default = False
+            SortedElements[1] :
+                Indique si les données doivent être triées dand l'ordre des aiguilles d'une montre/clockwise(False) ou l'ordre inverse/conterclockwise (True)
+                    default = False
+            SortedElements[2] :
+                Indique l'index de la colonne de données servant à trier les éléments (index dans DataColumns)
+                    default = 0
+
         DataColumns : list[int]
             liste des index de colonnes contenant les valeurs à comparer
                 default = [3]
@@ -207,8 +218,11 @@ class xlsDB:
         # Vérification des paramètres
         for c in DataColumns:
             assert c!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
+        assert SortedElements[2]<=len(DataColumns), "Erreur : l'index de la colonne choisie n'existe pas"
         assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
         assert len(DataColumns) <= 4, "Erreur, le nombre de colonnes de données ne peut dépasser 4"
+        assert SortedElements[0] or not SortedElements[0], "Le paramètre SortedElements[0] est invalide (non boléen)"
+        assert SortedElements[1] or not SortedElements[1], "Le paramètre SortedElements[1] est invalide (non boléen)"
 
         # Extraction données de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
@@ -232,6 +246,13 @@ class xlsDB:
 
         # Reconversion in List
         ElementList = [[key]+ElementDict[key] for key in KeyList]
+
+        # Tri des éléments par données
+        if SortedElements[0]:
+            def getKey(element):
+                return element[SortedElements[2]+1]
+
+            ElementList.sort(key=getKey, reverse=SortedElements[1])
 
         # Data recovery from ElementList
         DataLists = [[e[1+c] for e in ElementList] for c in range(len(DataColumns))]
@@ -298,14 +319,14 @@ if __name__=='__main__':
     if Choix=="1":
         print("Test DiagrammeMultiBarres :")
         # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par region
-        xls.DiagrammeMultiBarres((True,True,0),[3,5],0) 
+        xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
         # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par département
         #xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
     
     elif Choix=="2":
         print("Test DiagrammeMultiCirculaire :")
-        # Affichage données de 15 (inclu) à 20 (exclu) de quatres colonnes de données : 3,4,6,5
-        xls.DiagrammeMultiCirculaire(Stop=20, DataColumns=[3,4,5]) 
+        # Affichage données de 15 (inclu) à 20 (exclu) de quatres colonnes de données : 3,4,6,5, dans l'ordre inverse des aiguilles d'une montre
+        xls.DiagrammeMultiCirculaire(Stop=20, DataColumns=[3,4,5], SortedElements=(True, True, 0)) 
     
     else:
         print("Choix incorrect")
