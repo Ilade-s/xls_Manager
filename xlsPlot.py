@@ -189,7 +189,7 @@ class xlsDB:
         DataColumns : list[int]
             liste des index de colonnes contenant les valeurs à comparer
                 default = [3]
-                taille max : 4 éléments
+                taille max : 4 éléments (si la liste en contient plus, n'afffichera que les 4 premiers)
 
         KeyColumn : int
             index de la colonne contenant les clés (noms) liées aux données
@@ -220,9 +220,9 @@ class xlsDB:
             assert c!=KeyColumn, "Erreur : Les colonnes des données et des clés/noms sont les mêmes"
         assert SortedElements[2]<=len(DataColumns), "Erreur : l'index de la colonne choisie n'existe pas"
         assert Stop==None or Stop>Start, "Erreur, choix d'intervalle impossible (stop<=start)"
-        assert len(DataColumns) <= 4, "Erreur, le nombre de colonnes de données ne peut dépasser 4"
         assert SortedElements[0] or not SortedElements[0], "Le paramètre SortedElements[0] est invalide (non boléen)"
         assert SortedElements[1] or not SortedElements[1], "Le paramètre SortedElements[1] est invalide (non boléen)"
+        DataColumns = DataColumns[:4] # limit of 4 data column to be displayed
 
         # Extraction données de la feuille
         DataLists = [self.Data.col_values(c, Start, Stop) for c in DataColumns]
