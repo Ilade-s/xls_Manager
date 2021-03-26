@@ -320,7 +320,7 @@ if __name__=='__main__':
     if Choix=="1":
         print("Test DiagrammeMultiBarres :")
         # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par region
-        xls.DiagrammeMultiBarres((True,True,0),[3,5],1) 
+        xls.DiagrammeMultiBarres((True,True,0),[3,5],0) 
         # Affichage hommes et femmes sans diplôme, de 16 à 24 ans, par département
         #xls.DiagrammeMultiBarres((True,True,0),[3,5]) 
     
