@@ -30,7 +30,7 @@ class xlsWriter:
                 - SANS EXTENSION DE FICHIER
                 - Default = "" (vide)
             - SheetName : str
-                - Nom de feuille qui contiendra les données
+                - Nom de la feuille/sheet à éditer ou créer
                 - Default = "DataSheet"
         """
         if FileName=="": # Nouveau fichier
@@ -51,6 +51,8 @@ class xlsWriter:
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
         PARAMETRES :
+        -------------
+        Les indexs commencent tous à 0
         -------------
             - Data : dict{colName:[rows],...}
                 - dictionnaire contenant les colonnes de données à ajouter 
@@ -102,6 +104,32 @@ class xlsWriter:
             self.Sheet.write(RowStart,ColStart+ncol+1,label=ColumnKeys[ncol])
             for nrow in range(lenData):
                 self.Sheet.write(RowStart+nrow+1,ColStart+ncol+1,label=DataColumns[ncol][nrow])
+
+    def DeleteData(self,ColEnd=10,RowEnd=10,ColStart=0,RowStart=0):
+        """
+        Permet de supprimer des données d'une feuille, selon une zone préétablie
+
+        PARAMETRES :
+        --------------
+        Les indexs commencent tous à 0
+        --------------
+            - ColEnd : int
+                - Index de la dernière colonne (coté droite)
+                - Default = 10
+            - RowEnd : int
+                - Index de la dernière ligne (côté bas)
+                - Default = 10
+            - ColStart : int
+                - Index de la colonne de départ (côté gauche)
+                - Default = 0
+            - RowStart : int
+                - Index de la ligne de départ (côté haut)
+                - Default = 10
+        
+        SORTIE : 
+        -------------
+        Aucune
+        """
 
     def SaveFile(self,FileName="ExtractedData"):
         """
