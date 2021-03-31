@@ -12,7 +12,7 @@ FONCTIONNEMENT :
 """
 import xlwt # écriture de fichier xls
 
-class xlsData:
+class xlsWriter:
     def __init__(self,FileName=""):
         """
         Quand appelée, créé un Workbook object avec une feuille ("DataSheet") qui pourra ensuite être modifié puis sauvegardé
@@ -26,12 +26,12 @@ class xlsData:
         if FileName=="": # Nouveau fichier
             self.NewFile = True
             self.File = xlwt.Workbook() # création tableur
-            self.Sheet = self.File.add_sheet("DataSheet") # ajout d'une feuille
+            self.Sheet = self.File.add_sheet("DataSheet",True) # ajout d'une feuille
         else: # Fichier existant
             self.FileToEdit = open(FileName+".xls","w")
             self.NewFile = False
 
-    def AddData(Data,ColStart=0,RowStart=0,KeysCol=None,ColsOrder=None):
+    def AddData(self,Data,ColStart=0,RowStart=0,KeysCol=None,ColsOrder=None):
         """
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
@@ -53,6 +53,7 @@ class xlsData:
             - ColsOrder : None || list[keys] (optionnel)
                 - Liste des clés de colonnes dans l'ordre souhaité
                 - Si None, les colonnes seront entrées arbitrairement (par Data.keys())
+
         SORTIE :
         -------------
         (indirectement) Les données sont ajoutées à la feuille, qui peut ensuite être sauvegardée
@@ -63,7 +64,34 @@ class xlsData:
         assert KeysCol in Data.keys() or KeysCol==None, "Paramètres KeysCol invalide"
         if ColsOrder!=None:
             for c in ColsOrder:
-                assert ColsOrder[c] in Data.keys(), "Cols"
+                assert ColsOrder[c] in Data.keys(), "ColsOrder invalide"
+            ColumnKeys = ColsOrder
+        else:
+            ColumnKeys = [key for key in Data.keys()]
+        # Calcul nrows data
+        for j in Data.values():
+            lenData = len(j)
+        # Extraction données dict en liste
+        if KeysCol!=None:
+            KeyColumn = Data.pop(KeysCol)
+            KeyCol = ColumnKeys.pop(ColumnKeys.index(KeysCol))
+        else:
+            KeyColumn = [i for i in range(lenData)]
+        DataColumns = [data for data in Data.values()]
+        # Debug
+        print(ColumnKeys)
+        print(KeyColumn)
+        print(DataColumns)
+        # Ajout clés au Workbook
+        self.Sheet.write(RowStart,ColStart,label=KeyCol)
+        for nrow in range(lenData):
+            self.Sheet.write(RowStart+nrow+1,ColStart,label=KeyColumn[nrow])
+        # Ajout données au Workbook
+        for ncol in range(len(ColumnKeys)):
+            self.Sheet.write(RowStart,ColStart+ncol+1,label=ColumnKeys[ncol])
+            for nrow in range(lenData):
+                self.Sheet.write(RowStart+nrow+1,ColStart+ncol+1,label=DataColumns[ncol][nrow])
+
 
     def SaveFile(self,FileName="ExtractedData"):
         """
@@ -73,13 +101,14 @@ class xlsData:
         -------------
             - FileName : str
                 - Nom du fichier à enregistrer
+                - default = "ExtractedData" (feuille/sheet "DataSheet")
         """
         FileName = str(FileName) # Conversion en string (si int ou float)
         self.File.save(FileName+".xls") # Sauvegarde
 
 if __name__=="__main__": # test
-    data = {"keys":[chr(65+i) for i in range(10)],"data":[chr(65+i) for i in range(10)]}
+    data = {"keys":[chr(65+i) for i in range(10)],"data":[i for i in range(10)],"d":[i for i in range(10)],"da":[i for i in range(10)]}
     print(data)
-    xls = xlsData() # création workbook
-
+    xls = xlsWriter() # création workbook
+    xls.AddData(data, KeysCol="keys")
     xls.SaveFile() # sauvegarde xls

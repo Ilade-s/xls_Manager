@@ -9,7 +9,7 @@ MODULES UTILISES (A INSTALLER) :
     - matplotlib (graphiques)
     - panda (DataFrame : pour données graphiques)
     - numpy (Calculs : graphique)
-    (- sys : Messages d'erreur -included by default in python-)
+    - xlwt (écriture de fichier xls)
 FONCTIONS :
 ----------
     - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
@@ -27,10 +27,8 @@ MODULES USED (HAVE TO BE INSTALLED):
     - matplotlib (graphics)
     - panda (DataFrame : for graphic data)
     - numpy (Calculations : graphics)
-    (- sys : Error messages -included by default in python-)
+    - xlwt (xls file editing)
 FUNCTIONS : (may be changed someday by english names (cf. issue)
 ----------
-    - MultiBar Chart : Using a key column, will create a bar chart with several columns of data
-    - MultiCircleChart : Using one or more columns of data, will compare them in one or more pie charts (one for each column of data)
-
-(Translated with Deepl)
+    - DiagrammeMultiBarres : Using a key column, will create a bar chart with several columns of data
+    - DiagrammeMultiCirculaire : Using one or more columns of data, will compare them in one or more pie charts (one for each column of data)
