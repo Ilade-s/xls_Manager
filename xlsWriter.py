@@ -3,7 +3,6 @@ xlsWriter (édition de tableur xls)
 ---------------
 Ce module secondaire permet d'écrire des données sous forme de dictionnaire de colonnes.
 Celles-ci sont ensuite sauvegardées dans un tableur au format xls, qui sera exploitable par xlsPlot.py
-Ce module sera directement inclus dans xlsPlot.py dans un second temps.
 
 FONCTIONNEMENT :
 ---------------
@@ -101,7 +100,7 @@ class xlsWriter:
         #print(ColumnKeys)
         #print(KeyColumn)
         #print(DataColumns)
-        
+
         # Ajout clés au Workbook
         self.Sheet.write(RowStart,ColStart,label=KeyCol)
         for nrow in range(lenData):
@@ -111,7 +110,6 @@ class xlsWriter:
             self.Sheet.write(RowStart,ColStart+ncol+1,label=ColumnKeys[ncol])
             for nrow in range(lenData):
                 self.Sheet.write(RowStart+nrow+1,ColStart+ncol+1,label=DataColumns[ncol][nrow])
-
 
     def SaveFile(self,FileName="ExtractedData"):
         """
