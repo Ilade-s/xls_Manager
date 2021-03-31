@@ -131,3 +131,4 @@ dmypy.json
 # custom ignore
 testimport.py
 test.xls
+ExtractedData.xls

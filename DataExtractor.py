@@ -1,9 +1,9 @@
 """
 DataExtractor
 ---------------
-Ce module secondaire permet d'extraire des données sous forme de liste (simple ou imbriquée).
-Celles-ci sont ensuite sauvegardée dans un tableur au format xls, qui sera exploitable par xlsPlot.py
-Il sera directement inclus dans xlsPlot.py dans un second temps.
+Ce module secondaire permet d'écrire des données sous forme de dictionnaire de colonnes.
+Celles-ci sont ensuite sauvegardées dans un tableur au format xls, qui sera exploitable par xlsPlot.py
+Ce module sera directement inclus dans xlsPlot.py dans un second temps.
 
 FONCTIONNEMENT :
 ---------------
@@ -25,31 +25,45 @@ class xlsData:
         """
         if FileName=="": # Nouveau fichier
             self.NewFile = True
-            File = xlwt.Workbook() # création tableur
-            self.Sheet = File.add_sheet("DataSheet") # ajout d'une feuille
+            self.File = xlwt.Workbook() # création tableur
+            self.Sheet = self.File.add_sheet("DataSheet") # ajout d'une feuille
         else: # Fichier existant
-            self.File = open(FileName+".xls","w")
+            self.FileToEdit = open(FileName+".xls","w")
             self.NewFile = False
 
-    def AddData(Data,ColStart=0,RowStart=0):
+    def AddData(Data,ColStart=0,RowStart=0,KeysCol=None,ColsOrder=None):
         """
-        Ajoute les données en paramètre à la feuille instancée dans __init__
+        Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
         PARAMETRES :
         -------------
-            - Data : list || list[list[key,...]]
-                - liste contenant les données à ajouter et éventuellement les clés à ajouter au début
+            - Data : dict{colName:[rows],...}
+                - dictionnaire contenant les colonnes de données à ajouter 
+                    - Seront ajoutées dans leur entiéreté
+                    - La colonne de clé est renseignée par le paramètre "KeysCol"
             - ColStart : int
                 - Colonne de départ pour écriture : si des clés sont données (Data), elles seront écrites sur cette colonne
                 - Default = 0
             - RowStart : int
                 - Ligne de départ des données à ajouter
                 - Default = 0
+            - KeysCol : None || str (optionnel)
+                - Nom de la colonne (clé du dictionnaire Data) contenant les clés
+                - Si None, le programme assume qu'il n'existe pas de clé
+            - ColsOrder : None || list[keys] (optionnel)
+                - Liste des clés de colonnes dans l'ordre souhaité
+                - Si None, les colonnes seront entrées arbitrairement (par Data.keys())
         SORTIE :
         -------------
         (indirectement) Les données sont ajoutées à la feuille, qui peut ensuite être sauvegardée
         """
-        pass
+        # Vérification paramètres
+        assert ColStart >= 0, "Colonne de départ invalide"
+        assert RowStart >= 0, "Ligne de départ invalide"
+        assert KeysCol in Data.keys() or KeysCol==None, "Paramètres KeysCol invalide"
+        if ColsOrder!=None:
+            for c in ColsOrder:
+                assert ColsOrder[c] in Data.keys(), "Cols"
 
     def SaveFile(self,FileName="ExtractedData"):
         """
@@ -60,9 +74,12 @@ class xlsData:
             - FileName : str
                 - Nom du fichier à enregistrer
         """
-        self.File.save(FileName)
+        FileName = str(FileName) # Conversion en string (si int ou float)
+        self.File.save(FileName+".xls") # Sauvegarde
 
 if __name__=="__main__": # test
-    data = [[chr(65+i),i] for i in range(10)]
+    data = {"keys":[chr(65+i) for i in range(10)],"data":[chr(65+i) for i in range(10)]}
     print(data)
-    xlsData()
+    xls = xlsData() # création workbook
+
+    xls.SaveFile() # sauvegarde xls
