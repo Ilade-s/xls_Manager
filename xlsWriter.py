@@ -46,7 +46,7 @@ class xlsWriter:
                 self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
             self.NewFile = False
 
-    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,ColsOrder=None):
+    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None):
         """
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
@@ -65,10 +65,6 @@ class xlsWriter:
             - KeysCol : None || str (optionnel)
                 - Nom de la colonne (clé du dictionnaire Data) contenant les clés
                 - Si None, le programme assume qu'il n'existe pas de clé
-            - ColsOrder : None || list[keys] (optionnel)
-                - Liste des clés de colonnes dans l'ordre souhaité
-                - Si None, les colonnes seront entrées arbitrairement (par Data.keys())
-
         SORTIE :
         -------------
         (indirectement) Les données sont ajoutées à la feuille, qui peut ensuite être sauvegardée
@@ -78,12 +74,8 @@ class xlsWriter:
         assert ColStart >= 0, "Colonne de départ invalide"
         assert RowStart >= 0, "Ligne de départ invalide"
         assert KeysCol in Data.keys() or KeysCol==None, "Paramètres KeysCol invalide"
-        if ColsOrder!=None:
-            for c in ColsOrder:
-                assert ColsOrder[c] in Data.keys(), "ColsOrder invalide"
-            ColumnKeys = ColsOrder
-        else:
-            ColumnKeys = [key for key in Data.keys()]
+        # Extraction clés de colonnes
+        ColumnKeys = [key for key in Data.keys()]
         # Calcul nrows data
         for j in Data.values():
             lenData = len(j)
