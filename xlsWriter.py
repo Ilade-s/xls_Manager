@@ -1,13 +1,15 @@
 """
 xlsWriter (édition de tableur xls)
 ---------------
-Ce module secondaire permet d'écrire des données sous forme de dictionnaire de colonnes.
+Ce module secondaire permet d'écrire des données sous forme de dictionnaire de colonnes, ainsi que de supprimer des données d'un fichier xls.
 Celles-ci sont ensuite sauvegardées dans un tableur au format xls, qui sera exploitable par xlsPlot.py
 
 FONCTIONNEMENT :
 ---------------
     - 1 : Initialiser la classe xlsWriter permet de créer le Workbook (pour édition)
-    - 2 : La méthode AddData permet, comme son nom l'indique, d'ajouter des colonnes de données au Workbook
+    - 2 : Ajout ou suppression de données :
+        - La méthode AddData permet d'ajouter des colonnes de données au Workbook
+        - la méthode DeleteData permet de supprimer une zone de données du tableur 
     - 3 : la méthode SaveFile permet enfin de sauvegarder le Workbook dans un fichier xls, avec nom personnalisable
 
 Attention à bien lire les docstrings des méthodes afin de ne pas faire d'erreurs de paramètres (néanmoins, des "assert" sont présents pour protéger)
