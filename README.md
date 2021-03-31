@@ -10,6 +10,7 @@ MODULES UTILISES (A INSTALLER) :
     - panda (DataFrame : pour données graphiques)
     - numpy (Calculs : graphique)
     - xlwt (écriture de fichier xls)
+    - xlutils (lien entre xlrd et xlwt)
 FONCTIONS :
 ----------
     - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
@@ -19,7 +20,7 @@ English Version :
 -----------
 Plot creator (matplotlib) from data in an xls file
 ----------
-Program/Module that can be used in other programs, using matplotlib to create plots on data from an xls file, read with the xlrd module
+Program/Module that can be used in other programs, using matplotlib to create plots on data from an xls file, read with the xlrd module, and edited with xlwt and xlutils
 ----------
 MODULES USED (HAVE TO BE INSTALLED):
 ----------
@@ -28,6 +29,7 @@ MODULES USED (HAVE TO BE INSTALLED):
     - panda (DataFrame : for graphic data)
     - numpy (Calculations : graphics)
     - xlwt (xls file editing)
+    - xlutils (link between xlrd and xlwt)
 FUNCTIONS : (may be changed someday by english names (cf. issue)
 ----------
     - DiagrammeMultiBarres : Using a key column, will create a bar chart with several columns of data

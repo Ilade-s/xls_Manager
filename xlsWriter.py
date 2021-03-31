@@ -16,9 +16,12 @@ Attention à bien lire les docstrings des méthodes afin de ne pas faire d'erreu
 
 """
 import xlwt # écriture de fichier xls
+from xlrd import open_workbook # lecture de fichier xls (pour édition de fichier preéxistant)
+import xlutils.copy # joint entre xlrd et xlwt
+import copy # Copie des données (AddData)
 
 class xlsWriter:
-    def __init__(self,FileName=""):
+    def __init__(self,FileName="",SheetName="DataSheet"):
         """
         Quand appelée, créé un Workbook object avec une feuille ("DataSheet") qui pourra ensuite être modifié puis sauvegardé
         
@@ -27,16 +30,24 @@ class xlsWriter:
                 - Nom du fichier existant à éditer, si vide, crééra un nouvel objet pour édition.
                 - SANS EXTENSION DE FICHIER
                 - Default = "" (vide)
+            - SheetName : str
+                - Nom de feuille qui contiendra les données
+                - Default = "DataSheet"
         """
         if FileName=="": # Nouveau fichier
             self.NewFile = True
             self.File = xlwt.Workbook() # création tableur
-            self.Sheet = self.File.add_sheet("DataSheet",True) # ajout d'une feuille
+            self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
         else: # Fichier existant
-            self.FileToEdit = open(FileName+".xls","w")
+            FileReader = open_workbook(FileName+'.xls', formatting_info=True, on_demand=True)
+            self.File = xlutils.copy.copy(FileReader)
+            try:
+                self.Sheet = self.File.get_sheet(SheetName)
+            except:
+                self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
             self.NewFile = False
 
-    def AddData(self,Data,ColStart=0,RowStart=0,KeysCol=None,ColsOrder=None):
+    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,ColsOrder=None):
         """
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
@@ -63,6 +74,7 @@ class xlsWriter:
         -------------
         (indirectement) Les données sont ajoutées à la feuille, qui peut ensuite être sauvegardée
         """
+        Data = copy.deepcopy(data)
         # Vérification paramètres
         assert ColStart >= 0, "Colonne de départ invalide"
         assert RowStart >= 0, "Ligne de départ invalide"
@@ -82,11 +94,14 @@ class xlsWriter:
             KeyCol = ColumnKeys.pop(ColumnKeys.index(KeysCol))
         else:
             KeyColumn = [i for i in range(lenData)]
+            KeyCol = "keys"
         DataColumns = [data for data in Data.values()]
+
         # Debug
-        print(ColumnKeys)
-        print(KeyColumn)
-        print(DataColumns)
+        #print(ColumnKeys)
+        #print(KeyColumn)
+        #print(DataColumns)
+        
         # Ajout clés au Workbook
         self.Sheet.write(RowStart,ColStart,label=KeyCol)
         for nrow in range(lenData):
@@ -102,18 +117,30 @@ class xlsWriter:
         """
         Sauvegarde le fichier xls
 
+        Si un fichier preéxistant à été modifié, le fichier édité sera enregistré sous le nom {OriginalFileName}_Edited.xls"
+
         PARAMETRES :
         -------------
-            - FileName : str
+            - FileName : str (inutile si édition d'un fichier preéxistant)
                 - Nom du fichier à enregistrer
                 - default = "ExtractedData" (feuille/sheet "DataSheet")
         """
-        FileName = str(FileName) # Conversion en string (si int ou float)
-        self.File.save(FileName+".xls") # Sauvegarde
+        if self.NewFile: # Création d'un nouveau fichier
+            FileName = str(FileName) # Conversion en string (si int ou float)
+            self.File.save(FileName+".xls") # Sauvegarde
+        else: # Edition de fichier preéxistant
+            self.File.save(FileName+"_Edited"+".xls") # Sauvegarde
 
 if __name__=="__main__": # test
     data = {"keys":[chr(65+i) for i in range(10)],"data":[i for i in range(10)],"d":[i for i in range(10)],"da":[i for i in range(10)]}
     print(data)
+
+    # Création du fichier ExtractedData.xls
     xls = xlsWriter() # création workbook
     xls.AddData(data, KeysCol="keys")
+    xls.SaveFile() # sauvegarde xls
+
+    # Edition du fichier ExtractedData.xls
+    xls = xlsWriter(FileName="ExtractedData",SheetName="NewSheet") # création workbook
+    xls.AddData(data, KeysCol="keys", ColStart=2)
     xls.SaveFile() # sauvegarde xls
