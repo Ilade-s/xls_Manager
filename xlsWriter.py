@@ -1,5 +1,5 @@
 """
-DataExtractor
+xlsWriter (édition de tableur xls)
 ---------------
 Ce module secondaire permet d'écrire des données sous forme de dictionnaire de colonnes.
 Celles-ci sont ensuite sauvegardées dans un tableur au format xls, qui sera exploitable par xlsPlot.py
@@ -7,7 +7,12 @@ Ce module sera directement inclus dans xlsPlot.py dans un second temps.
 
 FONCTIONNEMENT :
 ---------------
-    La liste en paramètre peut contenir des clés ou non : si trouvées, seront mises dans la colonne 0 du tableur, sinon les indexs seront mis à leur place
+    - 1 : Initialiser la classe xlsWriter permet de créer le Workbook (pour édition)
+    - 2 : La méthode AddData permet, comme son nom l'indique, d'ajouter des colonnes de données au Workbook
+    - 3 : la méthode SaveFile permet enfin de sauvegarder le Workbook dans un fichier xls, avec nom personnalisable
+
+Attention à bien lire les docstrings des méthodes afin de ne pas faire d'erreurs de paramètres (néanmoins, des "assert" sont présents pour protéger)
+--------------
 
 """
 import xlwt # écriture de fichier xls
