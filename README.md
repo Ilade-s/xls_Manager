@@ -3,11 +3,11 @@ xlsPlot
 ----------
 (créateur de plots (matplotlib) à partir de données d'un fichier xls / édition et création de fichier xls) :
 ----------
-Modules pouvant être utilisés dans d'autres programmes, utilisant matplotlib afin de créer des graphiques sur les données d'un fichier xls, lu avec le module xlrd, et xlwt/xlutils pour l'édition
-----------
 xlsWriter
 ----------
 (édition de tableurs xls)
+----------
+Modules pouvant être utilisés dans d'autres programmes, utilisant matplotlib afin de créer des graphiques sur les données d'un fichier xls, lu avec le module xlrd, et xlwt/xlutils pour l'édition
 ----------
 MODULES UTILISES (A INSTALLER) :
 ----------
