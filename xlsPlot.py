@@ -306,8 +306,6 @@ class xlsDB:
 if __name__=='__main__':
     # feuille = int(input("feuille à ouvrir : "))
     # xls = xlsDB(feuille)
-
-    xls = xlsDB()
     print("=============================================")
     print("Bienvenue dans mon programme/module de gestion et de visualisation de données au format xls")
     print("Vous pouvez lancer un test pour chacune de ces deux fonctions :")
@@ -315,6 +313,8 @@ if __name__=='__main__':
     print("\t- 2 : DiagrammeMultiCirculaire")
     print("=============================================")
 
+    xls = xlsDB()
+    
     Choix = input("Choix (1 ou 2) : ")
 
     if Choix=="1":
