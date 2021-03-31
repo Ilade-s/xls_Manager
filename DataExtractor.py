@@ -13,14 +13,24 @@ FONCTIONNEMENT :
 import xlwt # écriture de fichier xls
 
 class xlsData:
-    def __init__(self,NewFile=True):
+    def __init__(self,FileName=""):
         """
         Quand appelée, créé un Workbook object avec une feuille ("DataSheet") qui pourra ensuite être modifié puis sauvegardé
+        
+        PARAMETRE :
+            - FileName : str
+                - Nom du fichier existant à éditer, si vide, crééra un nouvel objet pour édition.
+                - SANS EXTENSION DE FICHIER
+                - Default = "" (vide)
         """
-        if NewFile:
+        if FileName=="": # Nouveau fichier
+            self.NewFile = True
             File = xlwt.Workbook() # création tableur
             self.Sheet = File.add_sheet("DataSheet") # ajout d'une feuille
-    
+        else: # Fichier existant
+            self.File = open(FileName+".xls","w")
+            self.NewFile = False
+
     def AddData(Data,ColStart=0,RowStart=0):
         """
         Ajoute les données en paramètre à la feuille instancée dans __init__
@@ -28,12 +38,12 @@ class xlsData:
         PARAMETRES :
         -------------
             - Data : list || list[list[key,...]]
-                liste contenant les données à ajouter et éventuellement les clés à ajouter au début
+                - liste contenant les données à ajouter et éventuellement les clés à ajouter au début
             - ColStart : int
-                Colonne de départ pour écriture : si des clés sont données (Data), elles seront écrites sur cette colonne
+                - Colonne de départ pour écriture : si des clés sont données (Data), elles seront écrites sur cette colonne
                 - Default = 0
             - RowStart : int
-                Ligne de départ des données à ajouter
+                - Ligne de départ des données à ajouter
                 - Default = 0
         SORTIE :
         -------------
@@ -48,7 +58,7 @@ class xlsData:
         PARAMETRES :
         -------------
             - FileName : str
-                Nom du fichier à enregistrer
+                - Nom du fichier à enregistrer
         """
         self.File.save(FileName)
 

@@ -37,17 +37,17 @@ class xlsDB:
         
         PARAMETRES :
         --------
-        sheet : int
-            Index de la feuille de tableur à extraire
-                default = 10 (11-1)
+        - sheet : int
+            - Index de la feuille de tableur à extraire
+            - default = 10 (11-1)
         
-        fileName : str
-            nom du fichier xls à ouvrir
-                default = "pop-16ans-dipl6817"
+        - fileName : str
+            - nom du fichier xls à ouvrir
+            - default = "pop-16ans-dipl6817"
         
-        TitleCell : tuple(int,int)
-            coordonnées de la cellule contenant le titre de la feuille souhaité
-                default = (0,0)
+        - TitleCell : tuple(int,int)
+            - coordonnées de la cellule contenant le titre de la feuille souhaité
+            - default = (0,0)
         """
         # Vérification paramètres
         for i in TitleCell:
@@ -70,40 +70,40 @@ class xlsDB:
         --------
         Attention, cette fonction part du principe que le tableau est sous forme verticale et ne supportera pas les formes horizonales
         --------
-        SortedElements : tuple(bool, bool, int)
-            SortedElements[0] :
-                Indique si les données doivent être triées ou non
-                    default = False
-            SortedElements[1] :
-                Indique si les données doivent être triées en ordre croissant (False) ou décroissant (True)
-                    default = False
-            SortedElements[2] :
-                Indique l'index de la colonne de données servant à trier les éléments (index dans DataColumns)
-                    default = 0
+        - SortedElements : tuple(bool, bool, int)
+            - SortedElements[0] : bool
+                - Indique si les données doivent être triées ou non
+                - default = False
+            - SortedElements[1] : bool
+                - Indique si les données doivent être triées en ordre croissant (False) ou décroissant (True)
+                - default = False
+            - SortedElements[2] : int
+                - Indique l'index de la colonne de données servant à trier les éléments (index dans DataColumns)
+                - default = 0
 
-        DataColumns : list[int]
-            liste des index de colonnes contenant les valeurs à comparer
-                default = [3]
+        - DataColumns : list[int]
+            - liste des index de colonnes contenant les valeurs à comparer
+            - default = [3]
 
-        KeyColumn : int
+        - KeyColumn : int
             index de la colonne contenant les clés (noms) liées aux données
-                default = 2
+            - default = 2
         
-        Start : int
-            index de la ligne de départ (inclue) des éléments à étudier
-                default = 24
+        - Start : int
+            - index de la ligne de départ (inclue) des éléments à étudier
+            - default = 24
         
-        Stop : int || None
-            index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
-                default = "auto"
+        - Stop : int || "auto"
+            - index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
+            - default = "auto"
 
-        TitleOffset : int
-            Indique l'écart entre le Start et le titre (permet de trouver les titres d'axes)
-                default = 2
+        - TitleOffset : int
+            - Indique l'écart entre le Start et le titre (permet de trouver les titres d'axes)
+            - default = 2
 
-        figSize : tuple(float, float)
-            Indique la taille du diagramme (x, y)
-                default (recommandé pour lecture) = (20.0,20.0)
+        - figSize : tuple(float, float)
+            - Indique la taille du diagramme (x, y)
+            - default (recommandé pour lecture) = (20.0,20.0)
 
         SORTIE :
         --------
@@ -175,41 +175,41 @@ class xlsDB:
         --------
         Attention, cette fonction part du principe que le tableau est sous forme verticale et ne supportera pas les formes horizonales
         --------
-        SortedElements : tuple(bool, bool, int)
-            SortedElements[0] :
+        - SortedElements : tuple(bool, bool, int)
+            - SortedElements[0] : bool
                 Indique si les données doivent être triées ou non
-                    default = False
-            SortedElements[1] :
+                - default = False
+            - SortedElements[1] : bool
                 Indique si les données doivent être triées dand l'ordre des aiguilles d'une montre/clockwise(False) ou l'ordre inverse/conterclockwise (True)
-                    default = False
-            SortedElements[2] :
+                - default = False
+            - SortedElements[2] : bool
                 Indique l'index de la colonne de données servant à trier les éléments (index dans DataColumns)
-                    default = 0
+                - default = 0
 
-        DataColumns : list[int]
-            liste des index de colonnes contenant les valeurs à comparer
-                default = [3]
-                taille max : 4 éléments (si la liste en contient plus, n'afffichera que les 4 premiers)
+        - DataColumns : list[int]
+            - liste des index de colonnes contenant les valeurs à comparer
+            - default = [3]
+            - taille max : 4 éléments (si la liste en contient plus, n'afffichera que les 4 premiers)
 
-        KeyColumn : int
-            index de la colonne contenant les clés (noms) liées aux données
-                default = 2
+        - KeyColumn : int
+            - index de la colonne contenant les clés (noms) liées aux données
+            - default = 2
         
-        Start : int
-            index de la ligne de départ (inclue) des éléments à étudier
-                default = 24
+        - Start : int
+            - index de la ligne de départ (inclue) des éléments à étudier
+            - default = 24
         
-        Stop : int || None
-            index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
-                default = "auto"
+        - Stop : int || None
+            - index de la dernière ligne (exclue) des éléments à étudier ou "auto" pour exploiter toutes les données (après start)
+            - default = "auto"
 
-        TitleOffset : int
-            Indique l'écart entre le Start et le titre (permet de trouver les titres d'axes)
-                default = 2
+        - TitleOffset : int
+            - Indique l'écart entre le Start et le titre (permet de trouver les titres d'axes)
+            - default = 2
 
-        figSize : tuple(float, float)
-            Indique la taille du diagramme (x, y)
-                default (recommandé pour lecture) = (20.0,20.0)
+        - figSize : tuple(float, float)
+            - Indique la taille du diagramme (x, y)
+            - default (recommandé pour lecture) = (20.0,20.0)
 
         SORTIE :
         --------
