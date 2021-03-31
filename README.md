@@ -19,8 +19,11 @@ MODULES UTILISES (A INSTALLER) :
     - xlutils (lien entre xlrd et xlwt)
 FONCTIONS :
 ----------
-    - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
-    - DiagrammeMultiCirculaire : Utlisant une ou plusieurs colonnes de données, permet de les comparer dans un ou plusieurs camembert (un pour chaque colonne de données)
+    - xlsPlot :
+        - DiagrammeMultiBarres : Utlisant une colonne de clé, va créer un graphique en barres avec plusieurs colonnes de données
+        - DiagrammeMultiCirculaire : Utlisant une ou plusieurs colonnes de données, permet de les comparer dans un ou plusieurs camembert (un pour chaque colonne de données)
+    - xlsWriter :
+        - AddData : ajout de colonnes de données et de clés en dictionnaire, à un fichier xls preéxistant ou nouveau
 ____________________________________________
 English Version :
 -----------
