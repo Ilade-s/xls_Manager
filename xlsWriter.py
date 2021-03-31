@@ -107,7 +107,7 @@ class xlsWriter:
             for nrow in range(lenData):
                 self.Sheet.write(RowStart+nrow+1,ColStart+ncol+1,label=DataColumns[ncol][nrow])
 
-    def DeleteData(self,ColEnd=10,RowEnd=10,ColStart=0,RowStart=0):
+    def DeleteData(self,ColStart=0,RowStart=0,ColEnd=10,RowEnd=10):
         """
         Permet de supprimer des données d'une feuille, selon une zone préétablie
 
@@ -115,17 +115,17 @@ class xlsWriter:
         --------------
         Les indexs commencent tous à 0
         --------------
-            - ColEnd : int
-                - Index de la dernière colonne (coté droite)
-                - Default = 10
-            - RowEnd : int
-                - Index de la dernière ligne (côté bas)
-                - Default = 10
             - ColStart : int
-                - Index de la colonne de départ (côté gauche)
+                - Index de la colonne de départ, incluse (côté gauche)
                 - Default = 0
             - RowStart : int
-                - Index de la ligne de départ (côté haut)
+                - Index de la ligne de départ, incluse (côté haut)
+                - Default = 0
+            - ColEnd : int
+                - Index de la dernière colonne, non incluse (coté droite)
+                - Default = 10
+            - RowEnd : int
+                - Index de la dernière ligne, non incluse (côté bas)
                 - Default = 10
         
         SORTIE : 
