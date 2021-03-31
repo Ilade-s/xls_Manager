@@ -7,14 +7,6 @@ Module de création de plots (matplotlib) à partir de données d'un fichier xls
 
 - Si lancé en main, proposera de lancer un test de chaque fonction
 
-MODULES UTILISES (A INSTALLER) :
-----------
-    - xlrd (lecture de fichier xls)
-    - matplotlib (graphiques)
-    - panda (DataFrame : graphique)
-    - numpy (Calculs : graphique)
-    (- sys : Messages d'erreur -included by default in python-)
-
 UTILISATION :
 ----------
     La classe, quand initialisée, ouvre le fichier xls, puis peut exploiter toutes les fonctions
@@ -314,7 +306,7 @@ if __name__=='__main__':
     print("=============================================")
 
     xls = xlsDB()
-    
+
     Choix = input("Choix (1 ou 2) : ")
 
     if Choix=="1":

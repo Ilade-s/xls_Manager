@@ -132,6 +132,12 @@ class xlsWriter:
         -------------
         Aucune
         """
+        # Vérification paramètres
+        assert ColStart>=0, "Colonne de départ invalide"
+        assert RowStart>=0, "Ligne de départ invalide"
+        assert ColEnd-ColStart>=1, "Dernière colonne invalide"
+        assert RowEnd-RowStart>=1, "Dernière ligne invalide"
+        # Suppression de l'intervalle 2D
 
     def SaveFile(self,FileName="ExtractedData"):
         """
