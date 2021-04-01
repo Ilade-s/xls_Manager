@@ -24,6 +24,7 @@ FONCTIONS :
         - DiagrammeMultiCirculaire : Utlisant une ou plusieurs colonnes de données, permet de les comparer dans un ou plusieurs camembert (un pour chaque colonne de données)
     - xlsWriter :
         - AddData : ajout de colonnes de données et de clés en dictionnaire, à un fichier xls preéxistant ou nouveau
+        - DeleteData : suppression d'un intervalle/zone de données d'un tableur preéxistant 
 ____________________________________________
 English Version :
 -----------
@@ -41,5 +42,9 @@ MODULES USED (HAVE TO BE INSTALLED):
     - xlutils (link between xlrd and xlwt)
 FUNCTIONS : (may be changed someday by english names (cf. issue)
 ----------
-    - DiagrammeMultiBarres : Using a key column, will create a bar chart with several columns of data
-    - DiagrammeMultiCirculaire : Using one or more columns of data, will compare them in one or more pie charts (one for each column of data)
+    - xlsPlot :
+        - DiagrammeMultiBarres : Using a key column, will create a bar chart with several columns of data
+        - DiagrammeMultiCirculaire : Using one or more columns of data, will compare them in one or more pie charts (one for each column of data)
+    - xlsWriter :
+        - AddData : add data columns and keys in dictionary, to a preexisting or new xls file
+        - DeleteData : delete a range/data field from a pre-existing spreadsheet 
