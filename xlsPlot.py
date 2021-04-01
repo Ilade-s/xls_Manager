@@ -47,7 +47,7 @@ class xlsDB:
         assert sheet >= 0
 
         # Ouverture fichier xls
-        with xlrd.open_workbook(fileName+".xls", on_demand=True) as file: 
+        with xlrd.open_workbook("./"+fileName+".xls", on_demand=True) as file: 
             self.Data = file.get_sheet(sheet)
 
         # Extraction titre feuille

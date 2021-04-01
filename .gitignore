@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 
 # custom ignore
-testimport.py
 test.xls
 ExtractedData.xls
 ExtractedData_Edited.xls

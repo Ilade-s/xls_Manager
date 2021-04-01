@@ -42,7 +42,7 @@ class xlsWriter:
             self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
         else: # Fichier existant
             self.FileName = FileName
-            FileReader = open_workbook(FileName+'.xls', formatting_info=True, on_demand=True)
+            FileReader = open_workbook("./"+FileName+'.xls', formatting_info=True, on_demand=True)
             self.File = xlutils.copy.copy(FileReader)
             try:
                 self.Sheet = self.File.get_sheet(SheetName)
@@ -167,6 +167,17 @@ class xlsWriter:
                 self.File.save(FileName+".xls") # Sauvegarde
 
 if __name__=="__main__": # test
+    print("=============================================")
+    print("Bienvenue dans mon programme/module d'édition de fichier xls")
+    print("Vous pouvez lancer des test pour créer, dans l'ordre :")
+    print("\t- ExtractedData : créée, contient data")
+    print("\t- ExtractedData_Edited : A partir de ExtractedData, ajoute une feuille NewData")
+    print("\t- Data_Del.xls : A partir de ExtractedData, supprime la dernière colonne de données")
+    print("\tAttention, ces trois fichiers seront crées dans le dossier courant")
+    print("=============================================")
+    print("Appuyez sur entrée pour continuer...")
+    input()
+    
     data = {"keys":[chr(65+i) for i in range(10)],"data":[i for i in range(10)],"d":[i for i in range(10)],"da":[i for i in range(10)]}
     print(data)
 
