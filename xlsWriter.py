@@ -36,10 +36,12 @@ class xlsWriter:
                 - Default = "DataSheet"
         """
         if FileName=="": # Nouveau fichier
+            self.FileName = "ExtractedData"
             self.NewFile = True
             self.File = xlwt.Workbook() # création tableur
             self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
         else: # Fichier existant
+            self.FileName = FileName
             FileReader = open_workbook(FileName+'.xls', formatting_info=True, on_demand=True)
             self.File = xlutils.copy.copy(FileReader)
             try:
@@ -68,7 +70,7 @@ class xlsWriter:
                 - Default = 0
             - KeysCol : None || str (optionnel)
                 - Nom de la colonne (clé du dictionnaire Data) contenant les clés
-                - Si None, le programme assume qu'il n'existe pas de clé
+                - Si None, le programme assume qu'il n'existe pas de clé (des indexs seront mis à la place)
         SORTIE :
         -------------
         (indirectement) Les données sont ajoutées à la feuille, qui peut ensuite être sauvegardée
@@ -138,24 +140,31 @@ class xlsWriter:
         assert ColEnd-ColStart>=1, "Dernière colonne invalide"
         assert RowEnd-RowStart>=1, "Dernière ligne invalide"
         # Suppression de l'intervalle 2D
+        for col in range(ColStart,ColEnd):
+            for row in range(RowStart,RowEnd):
+                self.Sheet.write(row,col,label=None)
 
-    def SaveFile(self,FileName="ExtractedData"):
+    def SaveFile(self,FileName=None):
         """
         Sauvegarde le fichier xls
 
-        Si un fichier preéxistant à été modifié, le fichier édité sera enregistré sous le nom {OriginalFileName}_Edited.xls"
-
         PARAMETRES :
         -------------
-            - FileName : str (inutile si édition d'un fichier preéxistant)
+            - FileName : str || None
                 - Nom du fichier à enregistrer
-                - default = "ExtractedData" (feuille/sheet "DataSheet")
+                - default = None (le nom sera : {OriginalFileName}_Edited.xls )
         """
         if self.NewFile: # Création d'un nouveau fichier
-            FileName = str(FileName) # Conversion en string (si int ou float)
-            self.File.save(FileName+".xls") # Sauvegarde
+            if FileName==None:
+                self.File.save(self.FileName+".xls") # Sauvegarde
+            else:
+                FileName = str(FileName) # Conversion en string (si int ou float)
+                self.File.save(FileName+".xls") # Sauvegarde
         else: # Edition de fichier preéxistant
-            self.File.save(FileName+"_Edited"+".xls") # Sauvegarde
+            if FileName==None:
+                self.File.save(self.FileName+"_Edited"+".xls") # Sauvegarde
+            else:
+                self.File.save(FileName+".xls") # Sauvegarde
 
 if __name__=="__main__": # test
     data = {"keys":[chr(65+i) for i in range(10)],"data":[i for i in range(10)],"d":[i for i in range(10)],"da":[i for i in range(10)]}
@@ -170,3 +179,8 @@ if __name__=="__main__": # test
     xls = xlsWriter(FileName="ExtractedData",SheetName="NewSheet") # création workbook
     xls.AddData(data, KeysCol="keys", ColStart=2)
     xls.SaveFile() # sauvegarde xls
+
+    # Suppression ligne données 4 de ExtractedData.xls sous le nom Data_Del.xls
+    xls = xlsWriter(FileName="ExtractedData")
+    xls.DeleteData(ColStart=3,ColEnd=4,RowEnd=11)
+    xls.SaveFile(FileName="Data_Del")
