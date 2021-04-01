@@ -25,6 +25,8 @@ FONCTIONS :
     - xlsWriter :
         - AddData : ajout de colonnes de données et de clés en dictionnaire, à un fichier xls preéxistant ou nouveau
         - DeleteData : suppression d'un intervalle/zone de données d'un tableur preéxistant 
+Un exemple d'importation et d'utilisation des modules est également disponible : ImportationExemple.py
+-----------
 ____________________________________________
 English Version :
 -----------
