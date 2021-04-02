@@ -50,7 +50,7 @@ class xlsWriter:
                 self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
             self.NewFile = False
 
-    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None):
+    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,Title=(None,0,0)):
         """
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
@@ -71,12 +71,19 @@ class xlsWriter:
             - KeysCol : None || str (optionnel)
                 - Nom de la colonne (clé du dictionnaire Data) contenant les clés
                 - Si None, le programme assume qu'il n'existe pas de clé (des indexs seront mis à la place)
+            - Title : tuple(str || None,int,int)
+                - dans l'ordre :
+                    - Title[0] : str || None : Titre de la feuille/sheet (si None, la paramètre sera ignoré)
+                    - Title[1] : int : coord x (ligne/row)
+                    - Title[2] : int : coord y (colonne/column)
+
         SORTIE :
         -------------
         (indirectement) Les données sont ajoutées à la feuille, qui peut ensuite être sauvegardée
         """
         Data = copy.deepcopy(data)
         # Vérification paramètres
+        assert len(Title) == 3, "Paramètre Title invalide (format incorrect)"
         assert ColStart >= 0, "Colonne de départ invalide"
         assert RowStart >= 0, "Ligne de départ invalide"
         assert KeysCol in Data.keys() or KeysCol==None, "Paramètres KeysCol invalide"
@@ -108,6 +115,9 @@ class xlsWriter:
             self.Sheet.write(RowStart,ColStart+ncol+1,label=ColumnKeys[ncol])
             for nrow in range(lenData):
                 self.Sheet.write(RowStart+nrow+1,ColStart+ncol+1,label=DataColumns[ncol][nrow])
+        # Ajout Title (si non None)
+        if Title[0]!=None:
+            self.Sheet.write(Title[1],Title[2],label=Title[0])
 
     def DeleteData(self,ColStart=0,RowStart=0,ColEnd=10,RowEnd=10):
         """
@@ -183,15 +193,16 @@ if __name__=="__main__": # test
 
     # Création du fichier ExtractedData.xls
     xls = xlsWriter() # création workbook
-    xls.AddData(data, KeysCol="keys")
+    xls.AddData(data, KeysCol="keys", Title=("Données originales",6,6))
     xls.SaveFile() # sauvegarde xls
 
-    # Edition du fichier ExtractedData.xls
+    # Edition du fichier ExtractedData.xls 
     xls = xlsWriter(FileName="ExtractedData",SheetName="NewSheet") # création workbook
-    xls.AddData(data, KeysCol="keys", ColStart=2)
+    xls.AddData(data, KeysCol="keys", ColStart=2, Title=("EditedData",0,0))
     xls.SaveFile() # sauvegarde xls
 
     # Suppression ligne données 4 de ExtractedData.xls sous le nom Data_Del.xls
     xls = xlsWriter(FileName="ExtractedData")
     xls.DeleteData(ColStart=3,ColEnd=4,RowEnd=11)
     xls.SaveFile(FileName="Data_Del")
+    
