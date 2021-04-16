@@ -49,12 +49,52 @@ class xlsData:
         (rowx, columnx) = TitleCell
         self.Title = self.Data.cell_value(rowx,columnx)
 
-    def Lecture(self,rowstart=0,rowstop=0,colstart=0,colstop=0):
+    def Lecture(self,rowstart=13,rowstop=None,colstart=2,colstop=3):
         """
         Lit le fichier xls, puis renvoie les données en matrice
 
         PARAMETRES :
-            - rowstart : int
-                - ligne de départ 
+        -----------
+        Les index commencent tous à 0
+        -------------
+            - rowstart : int (incluse)
+                - ligne de départ (coord x)
+                - default = 0
+            - rowstop : int || None (incluse)
+                - ligne de fin (coord x)
+                - default = 0
+            - colstart : int (incluse)
+                - colonne de départ (coord y)
+                - default = 0
+            - colstop : int (incluse)
+                - colonne de fin (coord y)
+                - default = 0
+        
+        SORTIE : 
+        -----------
+            - MatData : list[list[any]]
+                - Matrice contenant les données au format cols[col[rows],...]
         """
-        pass
+        # Vérification des paramètres
+        assert rowstart>=0, "ligne de départ invalide (rowstart)"
+        assert colstart>=0, "colonne de départ invalide (colstart)"
+        assert rowstop==None or rowstop>=0, "ligne de fin invalide (rowstop)"
+        assert colstop>=0, "colonne de fin invalide (colstop)"
+
+        # Extraction des données de la zone souhaitée
+        #MatData = [[self.Data.cell_value(row, col) for row in range(rowstart,rowstop)] for col in range(colstart,colstop)]
+        MatData = [self.Data.col_values(col, rowstart, rowstop) for col in range(colstart,colstop+1)]
+
+        # Renvoi de la matrice
+        return MatData
+
+if __name__=='__main__': # Test
+    xls = xlsData()
+    mat = xls.Lecture(ndigitsfloats=0)
+
+    for col in mat:
+        for row in col:
+            print(row,end=' ')
+        print(' ')
+    
+    print(mat)

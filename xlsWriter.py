@@ -56,7 +56,7 @@ class xlsWriter:
 
         PARAMETRES :
         -------------
-        Les indexs commencent tous à 0
+        Les index commencent tous à 0
         -------------
             - Data : dict{colName:[rows],...}
                 - dictionnaire contenant les colonnes de données à ajouter 
