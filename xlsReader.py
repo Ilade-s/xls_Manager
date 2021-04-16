@@ -82,7 +82,6 @@ class xlsData:
         assert colstop>=0, "colonne de fin invalide (colstop)"
 
         # Extraction des données de la zone souhaitée
-        #MatData = [[self.Data.cell_value(row, col) for row in range(rowstart,rowstop)] for col in range(colstart,colstop)]
         MatData = [self.Data.col_values(col, rowstart, rowstop) for col in range(colstart,colstop+1)]
 
         # Renvoi de la matrice
@@ -90,11 +89,13 @@ class xlsData:
 
 if __name__=='__main__': # Test
     xls = xlsData()
-    mat = xls.Lecture(ndigitsfloats=0)
+    mat = xls.Lecture()
 
+    # affichage de chaque élément
     for col in mat:
         for row in col:
             print(row,end=' ')
         print(' ')
     
+    # affichage de la matrice en entier
     print(mat)
