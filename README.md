@@ -1,4 +1,4 @@
-# xls_PlotCreator_Editor
+# xls_Manager
 xlsPlot
 ----------
 (créateur de plots (matplotlib) à partir de données d'un fichier xls / édition et création de fichier xls) :
