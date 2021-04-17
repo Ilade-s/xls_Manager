@@ -49,7 +49,7 @@ class xlsData:
         (rowx, columnx) = TitleCell
         self.Title = self.Data.cell_value(rowx,columnx)
 
-    def Lecture(self,rowstart=13,rowstop=None,colstart=2,colstop=3,compatibility=False):
+    def Lecture(self,rowstart=13,rowstop=None,colstart=2,colstop=3,formattage="colmat"):
         """
         Lit le fichier xls, puis renvoie les données en matrice
 
@@ -69,18 +69,16 @@ class xlsData:
             - colstop : int (incluse)
                 - colonne de fin (coord y)
                 - default = 0
-            - compatibility : bool
-                - Si True, MatData sera au format dictionnaire, pour être utilisé avec xlsWriter
-                - Si False, MatData sera au format matrice, pour une lecture pour aisée
-                - default = False
+            - formattage : str
+                - "colmat" : format cols[col[rows],...]
+                - "rowmat" : format rows[row[col],...]
+                - "dict" : format cols{col[0]:[col[1:]],...}
         
         SORTIE : 
         -----------
             - MatData : list[list[any]]
                 - Matrice contenant les données 
-                - format :
-                    - compatibility = True : cols{col[0]:[col[1:]],...}
-                    - compatibility = False : cols[col[rows],...]
+                - format selon le paramètre "format"
 
         """
         # Vérification des paramètres
@@ -89,25 +87,27 @@ class xlsData:
         assert rowstop==None or rowstop>=0, "ligne de fin invalide (rowstop)"
         assert colstop>=0, "colonne de fin invalide (colstop)"
 
-        # Extraction des données de la zone souhaitée
+        # Extraction des données en matrice des colonnes
         MatData = [self.Data.col_values(col, rowstart, rowstop) for col in range(colstart,colstop+1)]
-
-        # Conversion en dictionnaire si demandé
-        if compatibility:
+        # Conversion des données en matrice des lignes
+        if formattage=="rowmat":
+            MatData = [[col[i] for col in MatData] for i in range(len(MatData[0]))]
+        # Extraction en dictionnaire
+        if formattage=="dict":
             MatData = {col[0]:col[1:] for col in MatData}
 
         # Renvoi de la matrice
         return MatData
 
 if __name__=='__main__': # Test
+    # Lecture de ExtractedData.xls
     xls = xlsData()
     mat = xls.Lecture()
+    xls = xlsData(0, "ExtractedData", TitleCell=(4,4))
 
-    # affichage de chaque élément
-    for col in mat:
-        for row in col:
-            print(row,end=' ')
-        print(' ')
-    
-    # affichage de la matrice en entier
+    mat = xls.Lecture(rowstart=0,colstart=0,colstop=3)
+    print(mat)
+    mat = xls.Lecture(rowstart=0,colstart=0,colstop=3,formattage="rowmat")
+    print(mat)
+    mat = xls.Lecture(rowstart=0,colstart=0,colstop=3,formattage="dict")
     print(mat)

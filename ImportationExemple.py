@@ -14,7 +14,7 @@ xls.SaveFile() # sauvegarde xls
 # importation de xlsReader
 xls = xlsReader.xlsData(0, "ExtractedData", TitleCell=(4,4))
 
-ReadData = xls.Lecture(rowstart=0,colstart=0,colstop=3,compatibility=True)
+ReadData = xls.Lecture(rowstart=0,colstart=0,colstop=3,formattage="dict")
 
 print(ReadData) # affichage données récupérées
 

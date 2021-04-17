@@ -130,7 +130,6 @@ dmypy.json
 
 # custom ignore
 test.xls
-ExtractedData.xls
 ExtractedData_Edited.xls
 Data_Del.xls
 .vscode
