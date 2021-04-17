@@ -49,7 +49,7 @@ class xlsData:
         (rowx, columnx) = TitleCell
         self.Title = self.Data.cell_value(rowx,columnx)
 
-    def Lecture(self,rowstart=13,rowstop=None,colstart=2,colstop=3,formattage="colmat"):
+    def Lecture(self,rowstart=13,rowstop=None,colstart=2,colstop=3,formatage="colmat"):
         """
         Lit le fichier xls, puis renvoie les données en matrice
 
@@ -86,14 +86,15 @@ class xlsData:
         assert colstart>=0, "colonne de départ invalide (colstart)"
         assert rowstop==None or rowstop>=0, "ligne de fin invalide (rowstop)"
         assert colstop>=0, "colonne de fin invalide (colstop)"
+        assert formatage=="colmat" or formatage=="rowmat" or formatage=="dict", "formatage invalide"
 
         # Extraction des données en matrice des colonnes
         MatData = [self.Data.col_values(col, rowstart, rowstop) for col in range(colstart,colstop+1)]
         # Conversion des données en matrice des lignes
-        if formattage=="rowmat":
+        if formatage=="rowmat":
             MatData = [[col[i] for col in MatData] for i in range(len(MatData[0]))]
         # Extraction en dictionnaire
-        if formattage=="dict":
+        if formatage=="dict":
             MatData = {col[0]:col[1:] for col in MatData}
 
         # Renvoi de la matrice
@@ -107,7 +108,7 @@ if __name__=='__main__': # Test
 
     mat = xls.Lecture(rowstart=0,colstart=0,colstop=3)
     print(mat)
-    mat = xls.Lecture(rowstart=0,colstart=0,colstop=3,formattage="rowmat")
+    mat = xls.Lecture(rowstart=0,colstart=0,colstop=3,formatage="rowmat")
     print(mat)
-    mat = xls.Lecture(rowstart=0,colstart=0,colstop=3,formattage="dict")
+    mat = xls.Lecture(rowstart=0,colstart=0,colstop=3,formatage="dict")
     print(mat)
