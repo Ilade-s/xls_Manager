@@ -9,7 +9,7 @@ Module de création de plots (matplotlib) à partir de données d'un fichier xls
 
 UTILISATION :
 ----------
-    La classe, quand initialisée, ouvre le fichier xls, puis peut exploiter toutes les fonctions
+    - La classe, quand initialisée, ouvre le fichier xls, puis peut exploiter toutes les fonctions
 
 FONCTIONS :
 ----------
@@ -78,7 +78,7 @@ class xlsDB:
             - default = [3]
 
         - KeyColumn : int
-            index de la colonne contenant les clés (noms) liées aux données
+            - index de la colonne contenant les clés (noms) liées aux données
             - default = 2
         
         - Start : int
