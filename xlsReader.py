@@ -49,7 +49,7 @@ class xlsData:
         (rowx, columnx) = TitleCell
         self.Title = self.Data.cell_value(rowx,columnx)
 
-    def Lecture(self,rowstart=13,rowstop=None,colstart=2,colstop=3):
+    def Lecture(self,rowstart=13,rowstop=None,colstart=2,colstop=3,compatibility=False):
         """
         Lit le fichier xls, puis renvoie les données en matrice
 
@@ -69,11 +69,19 @@ class xlsData:
             - colstop : int (incluse)
                 - colonne de fin (coord y)
                 - default = 0
+            - compatibility : bool
+                - Si True, MatData sera au format dictionnaire, pour être utilisé avec xlsWriter
+                - Si False, MatData sera au format matrice, pour une lecture pour aisée
+                - default = False
         
         SORTIE : 
         -----------
             - MatData : list[list[any]]
-                - Matrice contenant les données au format cols[col[rows],...]
+                - Matrice contenant les données 
+                - format :
+                    - compatibility = True : cols{col[0]:[col[1:]],...}
+                    - compatibility = False : cols[col[rows],...]
+
         """
         # Vérification des paramètres
         assert rowstart>=0, "ligne de départ invalide (rowstart)"
@@ -83,6 +91,10 @@ class xlsData:
 
         # Extraction des données de la zone souhaitée
         MatData = [self.Data.col_values(col, rowstart, rowstop) for col in range(colstart,colstop+1)]
+
+        # Conversion en dictionnaire si demandé
+        if compatibility:
+            MatData = {col[0]:col[1:] for col in MatData}
 
         # Renvoi de la matrice
         return MatData
