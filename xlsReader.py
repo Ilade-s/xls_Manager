@@ -18,7 +18,7 @@ FONCTIONS :
 import xlrd # Module de gestion mère xls
 
 class xlsData:
-    def __init__(self, sheet=10, fileName="pop-16ans-dipl6817", TitleCell=(0,0)):
+    def __init__(self, sheet=10, fileName="pop-16ans-dipl6817", TitleCell=(0,0), fullPath=""):
         """
         Initialisation de la base de données xls (ouverture et extraction)
         
@@ -35,6 +35,10 @@ class xlsData:
         - TitleCell : tuple(int,int)
             - coordonnées de la cellule contenant le titre de la feuille souhaité
             - default = (0,0)
+        
+        - fullPath : str
+            - si différent de "", remplace fileName pour l'ouverture de fichier
+            - default = "" (désactivé)
         """
         # Vérification paramètres
         for i in TitleCell:
@@ -42,8 +46,12 @@ class xlsData:
         assert sheet >= 0
 
         # Ouverture fichier xls
-        with xlrd.open_workbook("./"+fileName+".xls", on_demand=True) as file: 
-            self.Data = file.get_sheet(sheet)
+        if fullPath=="":
+            with xlrd.open_workbook("./"+fileName+".xls", on_demand=True) as file: 
+                self.Data = file.get_sheet(sheet)
+        else:
+            with xlrd.open_workbook(fullPath, on_demand=True) as file: 
+                self.Data = file.get_sheet(sheet)
 
         # Extraction titre feuille
         (rowx, columnx) = TitleCell
