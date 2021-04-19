@@ -34,6 +34,7 @@ import xlsReader # Edtition de fichiers xls
 import xlsWriter # Lecture de fichier xls
 import tkinter.filedialog as fldialog # Choix du fichier
 import os # Pour trouver le répertoire courant (os.getcwd)
+from tkinter import ttk # beaux boutons
 
 
 class window(Tk):
@@ -49,13 +50,13 @@ class window(Tk):
         Fenêtre initiale, permet de choisir le module à utiliser
         """
         self.funcs = []
+        self.OpenButton = None
         funcchoice = StringVar()
 
         def OpenFile():
-            Path = fldialog.askopenfilename(initialdir=os.getcwd(),title="Tableur à utiliser",filetypes=(("xls files","*.xls"),("all files","*.*")))
-            if Path!="":
-                self.FileName = Path.split("/")[-1][:-4] # Extraction du nom de fichier uniquement
-                self.OpenButton["text"] = self.FileName
+            self.FilePath = fldialog.askopenfilename(initialdir=os.getcwd(),title="Tableur à utiliser",filetypes=(("xls files","*.xls"),("all files","*.*")))
+            if self.FilePath!="":
+                self.OpenButton["text"] = self.FilePath.split("/")[-1][:-4]
                 ExitButton["state"] = "normal"
 
         def IsChecked():
@@ -68,14 +69,18 @@ class window(Tk):
                 for f in self.funcs:
                     f.destroy()
                 self.funcs = []
+            if self.OpenButton!=None:
+                self.OpenButton.destroy()
             # récupération de la classe souhaitée
             if value.get() == xlsPlot.__name__: # xlsPlot
                 classe = xlsPlot.xlsDB
-                self.OpenButton = Button(self, text="Choix du fichier", command=OpenFile, state="normal")
+                ExitButton["state"] = "disabled"
+                self.OpenButton = ttk.Button(self, text="Choix du fichier", command=OpenFile, state="normal", width=20)
                 self.OpenButton.pack()
             elif value.get() == xlsReader.__name__: # xlsReader
                 classe = xlsReader.xlsData
-                self.OpenButton = Button(self, text="Choix du fichier", command=OpenFile, state="normal")
+                ExitButton["state"] = "disabled"
+                self.OpenButton = ttk.Button(self, text="Choix du fichier", command=OpenFile, state="normal", width=20)
                 self.OpenButton.pack()
             elif value.get() == xlsWriter.__name__: # xlsWriter
                 classe = xlsWriter.xlsWriter
@@ -84,7 +89,7 @@ class window(Tk):
                 classe = xlsReader.xlsData
             # Ajout des fonctions dans la fenêtre
             for func in [method for method in dir(classe) if method[0]!="_"]:
-                self.funcs.append(Radiobutton(self, text=func, variable=funcchoice, value=func, font=self.font))
+                self.funcs.append(ttk.Radiobutton(self, text=func, variable=funcchoice, value=func))
                 self.funcs[-1].pack(anchor="w",padx=10)
                 funcchoice.set(func)
             
@@ -94,21 +99,21 @@ class window(Tk):
         self.title("xlsManager : choix fonction")
 
         # texte de présentation
-        Label(self, text="Bienvenue dans cette interface de gestion de tableurs xls",font=self.titlefont).pack(pady=5,anchor=CENTER)
-        Label(self, text="Pour commencer, merci de choisir le module que vous souhaitez utiliser. \n Ses fonctions vous seront ensuite proposées",font=self.font).pack(pady=5)
+        ttk.Label(self, text="Bienvenue dans cette interface de gestion de tableurs xls",font=self.titlefont).pack(pady=5,anchor=CENTER)
+        ttk.Label(self, text="Pour commencer, merci de choisir le module que vous souhaitez utiliser. \n Ses fonctions vous seront ensuite proposées",font=self.font).pack(pady=5)
 
         # Choix de module
         value = StringVar()
         value.set("xlsReader.__name__")
         # Boutons de choix de classe
-        Radiobutton(self, text="xlsReader : lecture de fichier xls", command=IsChecked, variable=value, value=xlsReader.__name__, font=self.font).pack(anchor="w",padx=10)
-        Radiobutton(self, text="xlsWriter : Edition de fichier xls", command=IsChecked, variable=value, value=xlsWriter.__name__, font=self.font).pack(anchor="w",padx=10)
-        Radiobutton(self, text="xlsPlot : création de graphique", command=IsChecked, variable=value, value=xlsPlot.__name__, font=self.font).pack(anchor="w",padx=10)
+        ttk.Radiobutton(self, text="xlsReader : lecture de fichier xls", command=IsChecked, variable=value, value=xlsReader.__name__).pack(anchor="w",padx=10)
+        ttk.Radiobutton(self, text="xlsWriter : Edition de fichier xls", command=IsChecked, variable=value, value=xlsWriter.__name__).pack(anchor="w",padx=10)
+        ttk.Radiobutton(self, text="xlsPlot : création de graphique", command=IsChecked, variable=value, value=xlsPlot.__name__).pack(anchor="w",padx=10)
         
         Label(self, text="Fonctions disponibles :", font=self.titlefont).pack(pady=5,anchor=CENTER)
         # Bouton de confirmation (ferme la fenêtre)
-        ExitButton = Button(self, text="Confirmer", command=self.destroy, state="disabled")
-        ExitButton.place(x=240,y=350)
+        ExitButton = ttk.Button(self, text="Confirmer", command=self.destroy, state="disabled",width=20)
+        ExitButton.place(x=210,y=350)
 
         self.mainloop()
 
@@ -128,7 +133,7 @@ if __name__=='__main__': # Exécution
 
     print("classe/module choisie :",win.Module)
     print("fonction choisie :",win.fonction)
-    print("Fichier choisi :",win.FileName)
+    print("Fichier choisi :",win.FilePath)
     #win.mainloop()
 
     
