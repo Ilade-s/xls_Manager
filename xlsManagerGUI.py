@@ -32,6 +32,9 @@ from tkinter import * # interface graphique
 import xlsPlot # Création de graphiques
 import xlsReader # Edtition de fichiers xls
 import xlsWriter # Lecture de fichier xls
+import tkinter.filedialog as fldialog # Choix du fichier
+import os # Pour trouver le répertoire courant (os.getcwd)
+
 
 class window(Tk):
     def __init__(self, master=None, titlefont=("Arial",13), font=("Arial",11)) -> None:
@@ -48,6 +51,13 @@ class window(Tk):
         self.funcs = []
         funcchoice = StringVar()
 
+        def OpenFile():
+            Path = fldialog.askopenfilename(initialdir=os.getcwd(),title="Tableur à utiliser",filetypes=(("xls files","*.xls"),("all files","*.*")))
+            if Path!="":
+                self.FileName = Path.split("/")[-1][:-4] # Extraction du nom de fichier uniquement
+                self.OpenButton["text"] = self.FileName
+                ExitButton["state"] = "normal"
+
         def IsChecked():
             """
             Action lors du choix de classe
@@ -61,10 +71,15 @@ class window(Tk):
             # récupération de la classe souhaitée
             if value.get() == xlsPlot.__name__: # xlsPlot
                 classe = xlsPlot.xlsDB
+                self.OpenButton = Button(self, text="Choix du fichier", command=OpenFile, state="normal")
+                self.OpenButton.pack()
             elif value.get() == xlsReader.__name__: # xlsReader
                 classe = xlsReader.xlsData
+                self.OpenButton = Button(self, text="Choix du fichier", command=OpenFile, state="normal")
+                self.OpenButton.pack()
             elif value.get() == xlsWriter.__name__: # xlsWriter
                 classe = xlsWriter.xlsWriter
+                ExitButton["state"] = "normal"
             else:
                 classe = xlsReader.xlsData
             # Ajout des fonctions dans la fenêtre
@@ -72,6 +87,7 @@ class window(Tk):
                 self.funcs.append(Radiobutton(self, text=func, variable=funcchoice, value=func, font=self.font))
                 self.funcs[-1].pack(anchor="w",padx=10)
                 funcchoice.set(func)
+            
                     
 
         self.geometry("550x400")
@@ -91,7 +107,8 @@ class window(Tk):
         
         Label(self, text="Fonctions disponibles :", font=self.titlefont).pack(pady=5,anchor=CENTER)
         # Bouton de confirmation (ferme la fenêtre)
-        Button(self, text="Confirmer", command=self.destroy).place(x=240,y=350)
+        ExitButton = Button(self, text="Confirmer", command=self.destroy, state="disabled")
+        ExitButton.place(x=240,y=350)
 
         self.mainloop()
 
@@ -111,6 +128,7 @@ if __name__=='__main__': # Exécution
 
     print("classe/module choisie :",win.Module)
     print("fonction choisie :",win.fonction)
+    print("Fichier choisi :",win.FileName)
     #win.mainloop()
 
     
