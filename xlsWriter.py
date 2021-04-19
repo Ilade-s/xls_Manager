@@ -22,7 +22,7 @@ import xlutils.copy # joint entre xlrd et xlwt
 import copy # Copie des données (AddData)
 
 class xlsWriter:
-    def __init__(self,FileName="",SheetName="DataSheet"):
+    def __init__(self,FileName="",SheetName="DataSheet", fullPath=""):
         """
         Quand appelée, créé un Workbook object avec une feuille ("DataSheet") qui pourra ensuite être modifié puis sauvegardé
         
@@ -35,20 +35,23 @@ class xlsWriter:
                 - Nom de la feuille/sheet à éditer ou créer
                 - Default = "DataSheet"
         """
-        if FileName=="": # Nouveau fichier
-            self.FileName = "ExtractedData"
-            self.NewFile = True
-            self.File = xlwt.Workbook() # création tableur
-            self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
-        else: # Fichier existant
+        if FileName!="" or fullPath!="": # Fichier existant
             self.FileName = FileName
-            FileReader = open_workbook("./"+FileName+'.xls', formatting_info=True, on_demand=True)
+            if fullPath=="":
+                FileReader = open_workbook("./"+FileName+'.xls', formatting_info=True, on_demand=True)
+            else:
+                FileReader = open_workbook(fullPath, formatting_info=True, on_demand=True)
             self.File = xlutils.copy.copy(FileReader)
             try:
                 self.Sheet = self.File.get_sheet(SheetName)
             except:
                 self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
             self.NewFile = False
+        else: # Nouveau fichier
+            self.FileName = "ExtractedData"
+            self.NewFile = True
+            self.File = xlwt.Workbook() # création tableur
+            self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
 
     def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,Title=(None,0,0)):
         """

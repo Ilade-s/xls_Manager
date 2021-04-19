@@ -58,7 +58,7 @@ class window(Tk):
             if self.FilePath!="":
                 self.OpenButton["text"] = self.FilePath.split("/")[-1][:-4]
                 ExitButton["state"] = "normal"
-
+        
         def IsChecked():
             """
             Action lors du choix de classe
@@ -71,22 +71,21 @@ class window(Tk):
                 self.funcs = []
             if self.OpenButton!=None:
                 self.OpenButton.destroy()
+            ExitButton["state"] = "disabled"
+            self.OpenButton = ttk.Button(self, text="Choix du fichier", command=OpenFile, state="normal", width=20)
             # récupération de la classe souhaitée
             if value.get() == xlsPlot.__name__: # xlsPlot
                 classe = xlsPlot.xlsDB
-                ExitButton["state"] = "disabled"
-                self.OpenButton = ttk.Button(self, text="Choix du fichier", command=OpenFile, state="normal", width=20)
-                self.OpenButton.pack()
             elif value.get() == xlsReader.__name__: # xlsReader
                 classe = xlsReader.xlsData
-                ExitButton["state"] = "disabled"
-                self.OpenButton = ttk.Button(self, text="Choix du fichier", command=OpenFile, state="normal", width=20)
-                self.OpenButton.pack()
             elif value.get() == xlsWriter.__name__: # xlsWriter
                 classe = xlsWriter.xlsWriter
+                self.FilePath = ""
                 ExitButton["state"] = "normal"
+                ttk.Label(self, text="Ne choisir un fichier uniquement si vous souhaitez le modifier \nPour créer un nouveau fichier, laisser le choix vide",font=self.font).pack(pady=5)
             else:
                 classe = xlsReader.xlsData
+            self.OpenButton.pack()
             # Ajout des fonctions dans la fenêtre
             for func in [method for method in dir(classe) if method[0]!="_"]:
                 self.funcs.append(ttk.Radiobutton(self, text=func, variable=funcchoice, value=func))
