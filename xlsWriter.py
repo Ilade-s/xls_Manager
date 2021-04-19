@@ -34,6 +34,9 @@ class xlsWriter:
             - SheetName : str
                 - Nom de la feuille/sheet à éditer ou créer
                 - Default = "DataSheet"
+            - fullPath : str
+                - si différent de "", remplace fileName pour l'ouverture de fichier
+                - default = "" (désactivé)
         """
         if FileName!="" or fullPath!="": # Fichier existant
             self.FileName = FileName
@@ -53,7 +56,7 @@ class xlsWriter:
             self.File = xlwt.Workbook() # création tableur
             self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
 
-    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,Title=(None,0,0)):
+    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,Title=(None,0,0), autoSave=(False,None)):
         """
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
@@ -79,6 +82,9 @@ class xlsWriter:
                     - Title[0] : str || None : Titre de la feuille/sheet (si None, la paramètre sera ignoré)
                     - Title[1] : int : coord x (ligne/row)
                     - Title[2] : int : coord y (colonne/column)
+            - AutoSave : tuple(bool, FileName: str || None)
+                - AutoSave[0] : Si true, SaveFile sera immédiatement appellé (si false, AutoSave sera ignoré)
+                - AutoSave[1] : FileName : paramètre de SaveFile(), se reporter à la docstring de SaveFile pour plus d'infos
 
         SORTIE :
         -------------
@@ -103,7 +109,6 @@ class xlsWriter:
             KeyColumn = [i for i in range(lenData)]
             KeyCol = "keys"
         DataColumns = [data for data in Data.values()]
-
         # Debug
         #print(ColumnKeys)
         #print(KeyColumn)
@@ -121,8 +126,12 @@ class xlsWriter:
         # Ajout Title (si non None)
         if Title[0]!=None:
             self.Sheet.write(Title[1],Title[2],label=Title[0])
+        
+        (Save, filename) = autoSave
+        if Save:
+            self.SaveFile(filename)
 
-    def DeleteData(self,ColStart=0,RowStart=0,ColEnd=10,RowEnd=10):
+    def DeleteData(self,ColStart=0,RowStart=0,ColEnd=10,RowEnd=10, autoSave=(False,None)):
         """
         Permet de supprimer des données d'une feuille, selon une zone préétablie
 
@@ -156,6 +165,10 @@ class xlsWriter:
         for col in range(ColStart,ColEnd):
             for row in range(RowStart,RowEnd):
                 self.Sheet.write(row,col,label=None)
+        
+        (Save, filename) = autoSave
+        if Save:
+            self.SaveFile(filename)
 
     def SaveFile(self,FileName=None):
         """
