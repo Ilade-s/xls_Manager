@@ -35,6 +35,8 @@ import xlsWriter # Lecture de fichier xls
 import tkinter.filedialog as fldialog # Choix du fichier
 import os # Pour trouver le répertoire courant (os.getcwd)
 from tkinter.ttk import * # meilleurs widgets
+import xlrd # récupération des feuilles/sheets
+import tkinter.messagebox as msgbox # Messages d'information ou d'avertissement
 
 
 class window(Tk):
@@ -43,11 +45,14 @@ class window(Tk):
         self.titlefont = titlefont
         self.font = font
         self.master = master
-        #print(self.ModuleChoice.__name__) # print le nom de fonction
+        self.fonction = ""
+        self.Module = ""
+        self.FilePath = ""
 
     def ModuleChoice(self):
         """
         Fenêtre initiale, permet de choisir le module à utiliser
+        Une fois les choix confirmés, la fenêtre de choix des paramètres est automatiquement appelée
         """
         self.funcs = []
         self.OpenButton = None
@@ -62,7 +67,7 @@ class window(Tk):
             self.fonction = funcchoice.get()
             self.Module = value.get()
             # debug
-            print("classe/module choisie :",self.Module)
+            print("classe/module choisi :",self.Module)
             print("fonction choisie :",self.fonction)
             print("Fichier choisi :",self.FilePath)
             # appel fenêtre secondiaire (choix des paramètres)
@@ -112,8 +117,6 @@ class window(Tk):
                 self.funcs[-1].pack(anchor="w",padx=10)
                 funcchoice.set(func)
             
-                    
-
         self.geometry("550x400")
         self.title("xlsManager : choix fonction")
 
@@ -134,16 +137,31 @@ class window(Tk):
         ExitButton = Button(self, text="Confirmer", command=Confirmation, state="disabled",width=20)
         ExitButton.place(x=210,y=350)
         
-        self.mainloop()
+
+    def ClearWindow(self):
+        """
+        Efface tous les widgets de la fenêtre
+        """
+        for w in self.winfo_children():
+            w.destroy()
+        self.pack_propagate(0)
+    
+    def GetSheets(self):
+        """
+        Permet de récupérer la liste des feuilles
+        """
+        with xlrd.open_workbook(self.FilePath, on_demand=True) as file: 
+            return (file._sheet_names)
 
     def WinParam(self):
         """
         Fenêtre d'entrée des paramètres
         Fonction mère de WinXlsReader, WinXlsWriter, WinXlsPlot
         """
-        for w in self.winfo_children():
-            w.destroy()
-        self.pack_propagate(0)
+        self.ClearWindow()
+        # Ajout widgets communs
+        Label(self, text="Fonction : "+self.fonction, font=self.titlefont).pack(anchor=CENTER,pady=25)
+        Label(self, text="Fichier choisi : "+self.FilePath.split("/")[-1][:-4]+"\n("+self.FilePath+")", font=self.font).pack(anchor="w")
         # appel de la fenêtre correspondante à la classe demandée/au module demandé
         if self.Module == "xlsReader":
             self.WinXlsReader()
@@ -156,20 +174,49 @@ class window(Tk):
         """
         Fenêtre pour le module d'xlsReader
         """
-        self.title("xlsReader : paramètres")
+        self.title("xlsReader : initialisation de la classe")
 
+        def ConfirmationInit():
+            """
+            Action lors de la confirmation des paramètres pour l'initialisation
+            """
+            if sheetChoice.get() in feuilles: # feuille choisie
+                # Récupération paramètres
+                self.feuille = sheetChoice.get()
+                # initialisation de la classe
+                xlsReader.xlsData(fullPath=self.FilePath,sheet=feuilles.index(self.feuille))
+            else: # feuille non spécifiée
+                msgbox.showinfo("Feuille indéfinie","La feuille à lire n'a pas été spécifiée ou est incorrecte")
+
+
+
+        # Placement widgets args initialisation
+        feuilles = self.GetSheets()
+        sheetChoice = StringVar()
+        sheetChoice.set("")
+
+        Label(self, text="Feuille à lire (sheet) :", font=self.font).pack(padx=10,anchor="w")
+        # Donne la liste des feuilles du fichier, permettant à l'utilisateur d'en choisir une
+        Combobox(self, values=feuilles, width=max([len(f) for f in feuilles]), state="readonly", textvariable=sheetChoice,height=30).pack(padx=20,anchor="w")
+        
+        # Bouton de confirmation (ferme la fenêtre)
+        ExitButton = Button(self, text="Confirmer", command=ConfirmationInit, width=20)
+        ExitButton.place(x=210,y=350)
+        
     
     def WinXlsWriter(self):
         """
         Fenêtre pour le module d'xlsWriter
         """
         self.title("xlsReader : paramètres")
+        # Placement widgets
     
     def WinXlsPlot(self):
         """
         Fenêtre pour le module d'xlsPlot
         """
         self.title("xlsReader : paramètres")
+        # Placement widgets
 
 if __name__=='__main__': # Exécution
     win = window()
