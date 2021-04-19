@@ -34,7 +34,7 @@ import xlsReader # Edtition de fichiers xls
 import xlsWriter # Lecture de fichier xls
 import tkinter.filedialog as fldialog # Choix du fichier
 import os # Pour trouver le répertoire courant (os.getcwd)
-from tkinter.ttk import *
+from tkinter.ttk import * # meilleurs widgets
 
 
 class window(Tk):
@@ -44,7 +44,7 @@ class window(Tk):
         self.font = font
         self.master = master
         #print(self.ModuleChoice.__name__) # print le nom de fonction
-    
+
     def ModuleChoice(self):
         """
         Fenêtre initiale, permet de choisir le module à utiliser
@@ -53,6 +53,20 @@ class window(Tk):
         self.OpenButton = None
         funcchoice = StringVar()
         self.warninglabel = None
+
+        def Confirmation():
+            """
+            Action lors de la confirmation des choix
+            """
+            # récupération choix
+            self.fonction = funcchoice.get()
+            self.Module = value.get()
+            # debug
+            print("classe/module choisie :",self.Module)
+            print("fonction choisie :",self.fonction)
+            print("Fichier choisi :",self.FilePath)
+            # appel fenêtre secondiaire (choix des paramètres)
+            self.WinParam()
 
         def OpenFile():
             self.FilePath = fldialog.askopenfilename(initialdir=os.getcwd(),title="Tableur à utiliser",filetypes=(("xls files","*.xls"),("all files","*.*")))
@@ -87,7 +101,7 @@ class window(Tk):
                 classe = xlsWriter.xlsWriter
                 self.FilePath = ""
                 ExitButton["state"] = "normal"
-                self.warninglabel = Label(self, text="Ne choisir un fichier uniquement si vous souhaitez le modifier \nPour créer un nouveau fichier, laisser le choix vide",font=self.font)
+                self.warninglabel = Label(self, text="Ne choisir un fichier uniquement si vous souhaitez le modifier \nPour créer un nouveau fichier, laisser vide",font=self.font,anchor=CENTER)
                 self.warninglabel.pack(pady=5)
             else:
                 classe = xlsReader.xlsData
@@ -117,28 +131,51 @@ class window(Tk):
         
         Label(self, text="Fonctions disponibles :", font=self.titlefont).pack(pady=5,anchor=CENTER)
         # Bouton de confirmation (ferme la fenêtre)
-        ExitButton = Button(self, text="Confirmer", command=self.destroy, state="disabled",width=20)
+        ExitButton = Button(self, text="Confirmer", command=Confirmation, state="disabled",width=20)
         ExitButton.place(x=210,y=350)
-
+        
         self.mainloop()
 
-        self.fonction = funcchoice.get()
-        self.Module = value.get()
+    def WinParam(self):
+        """
+        Fenêtre d'entrée des paramètres
+        Fonction mère de WinXlsReader, WinXlsWriter, WinXlsPlot
+        """
+        for w in self.winfo_children():
+            w.destroy()
+        self.pack_propagate(0)
+        # appel de la fenêtre correspondante à la classe demandée/au module demandé
+        if self.Module == "xlsReader":
+            self.WinXlsReader()
+        elif self.Module == "xlsWriter":
+            self.WinXlsWriter()
+        elif self.Module == "xlsPlot":
+            self.WinXlsPlot()
 
-    def ModuleUse(self):
+    def WinXlsReader(self):
         """
-        Fenêtre principale, permet l'uilisation du module choisi précedemment
-        Elle s'adapte dynamiquement par la décoration de la classe Module
+        Fenêtre pour le module d'xlsReader
         """
+        self.title("xlsReader : paramètres")
+
+    
+    def WinXlsWriter(self):
+        """
+        Fenêtre pour le module d'xlsWriter
+        """
+        self.title("xlsReader : paramètres")
+    
+    def WinXlsPlot(self):
+        """
+        Fenêtre pour le module d'xlsPlot
+        """
+        self.title("xlsReader : paramètres")
 
 if __name__=='__main__': # Exécution
     win = window()
 
-    win.ModuleChoice()
+    win.ModuleChoice() # fenêtre initiale
 
-    print("classe/module choisie :",win.Module)
-    print("fonction choisie :",win.fonction)
-    print("Fichier choisi :",win.FilePath)
-    #win.mainloop()
+    win.mainloop()
 
     
