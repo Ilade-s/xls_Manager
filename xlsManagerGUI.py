@@ -33,6 +33,7 @@ import xlsPlot # Création de graphiques
 import xlsReader # Edtition de fichiers xls
 import xlsWriter # Lecture de fichier xls
 import tkinter.filedialog as fldialog # Choix du fichier
+from tkinter.simpledialog import askstring # récupéaration nom pour sauvergarde
 import os # Pour trouver le répertoire courant (os.getcwd)
 from tkinter.ttk import * # meilleurs widgets
 import xlrd # récupération des feuilles/sheets
@@ -58,7 +59,7 @@ class window(Tk):
                 - default = ("Arial",11)
         """
         super().__init__(master)
-        self.retval = ""
+        self.retval = [[]]
         self.titlefont = titlefont
         self.font = font
         self.master = master
@@ -91,8 +92,9 @@ class window(Tk):
             self.WinParam()
 
         def OpenFile():
-            self.FilePath = fldialog.askopenfilename(initialdir=os.getcwd(),title="Tableur à utiliser",filetypes=(("xls files","*.xls"),("all files","*.*")))
-            if self.FilePath!="":
+            NewPath = fldialog.askopenfilename(initialdir=os.getcwd(),title="Tableur à utiliser",filetypes=(("xls files","*.xls"),("all files","*.*")))
+            if NewPath!="":
+                self.FilePath = NewPath
                 self.OpenButton["text"] = self.FilePath.split("/")[-1][:-4]
                 ExitButton["state"] = "normal"
         
@@ -178,6 +180,53 @@ class window(Tk):
         """
         self.title("xlsReader : initialisation de la classe")
 
+        def WinRetFunc():
+            """
+            Fenêtre qui affiche le résultat de la fonction
+            Permet aussi de sauvegarder les résultats, par xlsWriter
+            """
+            AffChoice = IntVar()
+            AffChoice.set(1)
+            
+            def Affichage():
+                """
+                Action lors du choix d'affichage
+                """
+                Aff = AffChoice.get() # récupération type d'affichage
+                if Aff==1: # Affichage normal
+                    self.ClearWindow()
+                    self.title("Affichage simple")
+                    self.geometry("{}x{}".format(1000,1000))
+                    Label(self, text="Affichage résultat :", font=self.titlefont).pack(anchor=CENTER)
+                    for i in self.retval:
+                        Label(self, text=str(i), font=self.font).pack(pady=5,padx=5,anchor="w")
+
+                elif Aff==3: # sauvegarde (xlsWriter) 
+                    path = fldialog.asksaveasfilename(initialdir=os.getcwd(),title="Sauvegarde résultat",filetypes=(("xls files","*.xls"),("all files","*.*")),defaultextension=".xls")
+                    filename = path.split("/")[-1][:-4]
+                    print(filename)
+                    sheetname = askstring("Nom de feuille/sheet","Nom de la feuille de tableur:")
+                    try:
+                        xls = xlsWriter.xlsWriter(SheetName=sheetname)
+                        dictretval = self.xls.Lecture(self.Rowstart,self.Rowstop,self.Colstart,self.Colstop,"dict")
+                        xls.AddData(dictretval,self.Colstart,self.Rowstart, autoSave=(True, filename))
+                        msgbox.showinfo("Sauvergarde réussie","le résultat a été sauvegardé avec succès sous le nom "+filename)
+                    except:
+                        msgbox.showerror("Erreur sauvegarde","Une erreur a été rencontrée durant la sauvegarde, veuillez réessayer")
+
+            self.ClearWindow()
+            self.title("xlsReader : Résultat")
+            self.geometry("{}x{}".format(600,200))
+            # Widgets
+            Label(self, text="Vous pouvez choisir comment afficher les résultats :").pack(pady=10,padx=5,anchor=CENTER)
+            Radiobutton(self, text="Affichage normal (type print)", variable=AffChoice, value=1, command=lambda: ExitButton.configure(state="normal")).pack(anchor="w",padx=30)
+            #Radiobutton(self, text="Aperçu tableau", variable=AffChoice, value=2, command=lambda: ExitButton.configure(state="normal")).pack(anchor="w",padx=30)
+            Radiobutton(self, text="Sauvegarde dans un tableur xls", variable=AffChoice, value=3, command=lambda: ExitButton.configure(state="normal")).pack(anchor="w",padx=30)
+            Label(self, text='Le résultat de la fonction peut aussi être retrouvé dans l\'attribut "retval" de la classe').pack(pady=10,padx=5,anchor=CENTER)
+            # bouton de confirmation
+            ExitButton = Button(self, text="Confirmer", command=Affichage, width=20, state="disabled")
+            ExitButton.place(x=250,y=150)
+
         def ConfirmationArgs():
             """
             Action lors de la confirmation des paramètres
@@ -187,6 +236,7 @@ class window(Tk):
                 self.Rowstart = int(self.Rowstart.get())
             except: 
                 msgbox.showwarning("Ligne de départ invalide","La valeur indiquée est invalide (laissé vide ?)")
+                WinArgs() # réinitialisation fenêtre
                 return 0
             try: 
                 self.Rowstop = int(self.Rowstop.get())
@@ -196,17 +246,25 @@ class window(Tk):
                 self.Colstart = int(self.Colstart.get())
             except: 
                 msgbox.showwarning("Colonne de départ invalide","La valeur indiquée est invalide (laissé vide ?)")
+                WinArgs() # réinitialisation fenêtre
                 return 0
             try: 
                 self.Colstop = int(self.Colstop.get())
             except: 
                 msgbox.showwarning("Colonne de fin invalide","La valeur indiquée est invalide (laissé vide ?)")
+                WinArgs() # réinitialisation fenêtre
                 return 0
             self.formatage = self.formatage.get()
             # appel fonction
             if self.fonction == xlsReader.xlsData.Lecture.__name__:
-                self.retval = self.xls.Lecture(self.Rowstart,self.Rowstop,self.Colstart,self.Colstop,self.formatage)
-            print(self.retval)
+                try:
+                    self.retval = self.xls.Lecture(self.Rowstart,self.Rowstop,self.Colstart,self.Colstop,self.formatage)
+                    print("Résulat :",self.retval)
+                    WinRetFunc() # Affichage fenêtre finale (résultat)
+                except:
+                    msgbox.showerror("Erreur lecture","la lecture du fichier à rencontré une erreur (certainement dûe à un mauvais paramètre). \nVeuillez réessayer")
+                    WinArgs() # réinitialisation fenêtre
+                    return 0
 
         def WinArgs():
             """
