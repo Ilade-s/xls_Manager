@@ -212,7 +212,7 @@ class window(Tk):
                         xls.AddData(dictretval,self.Colstart,self.Rowstart, autoSave=(True, filename))
                         msgbox.showinfo("Sauvergarde réussie","le résultat a été sauvegardé avec succès sous le nom "+filename)
                     except:
-                        msgbox.showerror("Erreur sauvegarde","Une erreur a été rencontrée durant la sauvegarde, veuillez réessayer")
+                       msgbox.showerror("Erreur sauvegarde","Une erreur a été rencontrée durant la sauvegarde, veuillez réessayer")
 
             self.ClearWindow()
             self.title("xlsReader : Résultat")
@@ -222,10 +222,12 @@ class window(Tk):
             Radiobutton(self, text="Affichage normal (type print)", variable=AffChoice, value=1, command=lambda: ExitButton.configure(state="normal")).pack(anchor="w",padx=30)
             #Radiobutton(self, text="Aperçu tableau", variable=AffChoice, value=2, command=lambda: ExitButton.configure(state="normal")).pack(anchor="w",padx=30)
             Radiobutton(self, text="Sauvegarde dans un tableur xls", variable=AffChoice, value=3, command=lambda: ExitButton.configure(state="normal")).pack(anchor="w",padx=30)
-            Label(self, text='Le résultat de la fonction peut aussi être retrouvé dans l\'attribut "retval" de la classe').pack(pady=10,padx=5,anchor=CENTER)
+            Label(self, text='Le résultat de la fonction peut aussi être retrouvé dans l\'attribut "retval" de la classe \nLorsque vous avez fini, vous pouvez fermer la fenêtre ou cliquer sur quitter').pack(pady=10,padx=5,anchor=CENTER)
             # bouton de confirmation
             ExitButton = Button(self, text="Confirmer", command=Affichage, width=20, state="disabled")
-            ExitButton.place(x=250,y=150)
+            ExitButton.place(x=140,y=150)
+            QuitButton = Button(self, text="Quitter", command=self.destroy, width=20)
+            QuitButton.place(x=350,y=150)
 
         def ConfirmationArgs():
             """
