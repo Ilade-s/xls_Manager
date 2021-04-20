@@ -76,7 +76,7 @@ class xlsWriter:
                 - Default = 0
             - KeysCol : None || str (optionnel)
                 - Nom de la colonne (clé du dictionnaire Data) contenant les clés
-                - Si None, le programme assume qu'il n'existe pas de clé (des indexs seront mis à la place)
+                - Si None, le programme assume qu'il n'existe pas de clé (les données seront mises sans recherche de clés)
             - Title : tuple(str || None,int,int)
                 - dans l'ordre :
                     - Title[0] : str || None : Titre de la feuille/sheet (si None, la paramètre sera ignoré)
@@ -105,24 +105,23 @@ class xlsWriter:
         if KeysCol!=None:
             KeyColumn = Data.pop(KeysCol)
             KeyCol = ColumnKeys.pop(ColumnKeys.index(KeysCol))
-        else:
-            KeyColumn = [i for i in range(lenData)]
-            KeyCol = "keys"
         DataColumns = [data for data in Data.values()]
         # Debug
         #print(ColumnKeys)
         #print(KeyColumn)
         #print(DataColumns)
-
+        KeyOffset = 0
         # Ajout clés au Workbook
-        self.Sheet.write(RowStart,ColStart,label=KeyCol)
-        for nrow in range(lenData):
-            self.Sheet.write(RowStart+nrow+1,ColStart,label=KeyColumn[nrow])
+        if KeysCol!=None:
+            KeyOffset+=1
+            self.Sheet.write(RowStart,ColStart,label=KeyCol)
+            for nrow in range(lenData):
+                self.Sheet.write(RowStart+nrow+1,ColStart,label=KeyColumn[nrow])
         # Ajout données au Workbook
         for ncol in range(len(ColumnKeys)):
-            self.Sheet.write(RowStart,ColStart+ncol+1,label=ColumnKeys[ncol])
+            self.Sheet.write(RowStart,ColStart+ncol+KeyOffset,label=ColumnKeys[ncol])
             for nrow in range(lenData):
-                self.Sheet.write(RowStart+nrow+1,ColStart+ncol+1,label=DataColumns[ncol][nrow])
+                self.Sheet.write(RowStart+nrow+1,ColStart+ncol+KeyOffset,label=DataColumns[ncol][nrow])
         # Ajout Title (si non None)
         if Title[0]!=None:
             self.Sheet.write(Title[1],Title[2],label=Title[0])
