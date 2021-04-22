@@ -429,10 +429,10 @@ class window(Tk):
         with xlrd.open_workbook(self.FilePath, on_demand=True) as file:
             return (file._sheet_names)
 
+def main():
+    win = window()
+    win.ModuleChoice()  # fenêtre initiale
+    win.mainloop()
 
 if __name__ == '__main__':  # Exécution
-    win = window()
-
-    win.ModuleChoice()  # fenêtre initiale
-
-    win.mainloop()
+    main()
