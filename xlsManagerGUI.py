@@ -209,16 +209,29 @@ class window(Tk):
                 if Aff == 1:  # Affichage normal
                     self.ClearWindow()
                     self.title("Affichage simple")
-                    self.geometry("{}x{}".format(1000, 1000))
+                    self.geometry("{}x{}".format(1000, 400))
                     Label(self, text="Affichage résultat :",
                           font=self.titlefont).pack(anchor=CENTER)
-                    for i in self.retval:
-                        Label(self, text=str(i), font=self.font).pack(
-                            pady=5, padx=5, anchor="w")
+                    if self.formatage=="rowmat" or self.formatage=="colmat":
+                        for i in self.retval:
+                            Label(self, text=str(i)).pack(
+                                pady=5, padx=5)
+                    else:
+                        for i in self.retval.items():
+                            for j in i:
+                                Label(self, text=str(j)).pack(
+                                    pady=5, padx=5)
+
+                    ExitButton = Button(self, text="Retour",
+                                        command=WinRetFunc, width=20)
+                    ExitButton.place(x=290, y=350)
+                    QuitButton = Button(self, text="Quitter",
+                                        command=self.destroy, width=20)
+                    QuitButton.place(x=580, y=350)
 
                 elif Aff == 3:  # sauvegarde (xlsWriter)
                     path = fldialog.asksaveasfilename(initialdir=os.getcwd(), title="Sauvegarde résultat", filetypes=(
-                        ("xls files", "*.xls"), ("all files", "*.*")), defaultextension=".xls")
+                        ("xls files (.xls)", "*.xls"), ("all files", "*.*")), defaultextension=".xls", initialfile="save")
                     filename = path.split("/")[-1][:-4]
                     print(filename)
                     sheetname = askstring(
@@ -292,7 +305,7 @@ class window(Tk):
                 try:
                     self.retval = self.xls.Lecture(
                         self.Rowstart, self.Rowstop, self.Colstart, self.Colstop, self.formatage)
-                    print("Résulat :", self.retval)
+                    print("Résultat :", self.retval)
                     WinRetFunc()  # Affichage fenêtre finale (résultat)
                 except:
                     msgbox.showerror(
