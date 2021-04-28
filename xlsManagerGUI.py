@@ -30,7 +30,7 @@ MODULES UTILISES : (en plus des trois modules)
 
 from tkinter import *  # interface graphique
 import xlsPlot  # Création de graphiques
-import xlsReader  # Edtition de fichiers xls
+import xlsReader  # Edition de fichiers xls
 import xlsWriter  # Lecture de fichier xls
 import tkinter.filedialog as fldialog  # Choix du fichier
 from tkinter.simpledialog import askstring  # récupéaration nom pour sauvergarde
@@ -248,7 +248,7 @@ class window(Tk):
                         msgbox.showinfo(
                             "Sauvergarde réussie", "le résultat a été sauvegardé avec succès sous le nom "+filename)
                     except Exception as e:
-                        print("Exeception reçue :", e)
+                        print(e)
                         msgbox.showerror(
                             "Erreur sauvegarde", "Une erreur a été rencontrée durant la sauvegarde, veuillez réessayer")
 
@@ -280,25 +280,29 @@ class window(Tk):
             # Récupération variables + conversion en int
             try:
                 self.Rowstart = int(self.Rowstart.get())
-            except:
+            except Exception as e:
+                print(e)
                 msgbox.showwarning(
                     "Ligne de départ invalide", "La valeur indiquée est invalide (laissé vide ?)")
                 WinArgs()  # réinitialisation fenêtre
                 return 0
             try:
                 self.Rowstop = int(self.Rowstop.get())
-            except:
+            except Exception as e:
+                print(e)
                 self.Rowstop = None
             try:
                 self.Colstart = int(self.Colstart.get())
-            except:
+            except Exception as e:
+                print(e)
                 msgbox.showwarning("Colonne de départ invalide",
                                    "La valeur indiquée est invalide (laissé vide ?)")
                 WinArgs()  # réinitialisation fenêtre
                 return 0
             try:
                 self.Colstop = int(self.Colstop.get())
-            except:
+            except Exception as e:
+                print(e)
                 msgbox.showwarning(
                     "Colonne de fin invalide", "La valeur indiquée est invalide (laissé vide ?)")
                 WinArgs()  # réinitialisation fenêtre
@@ -311,7 +315,8 @@ class window(Tk):
                         self.Rowstart, self.Rowstop, self.Colstart, self.Colstop, self.formatage)
                     print("Résultat :", self.retval)
                     WinRetFunc()  # Affichage fenêtre finale (résultat)
-                except:
+                except Exception as e:
+                    print(e)
                     msgbox.showerror(
                         "Erreur lecture", "la lecture du fichier à rencontré une erreur (certainement dûe à un mauvais paramètre). \nVeuillez réessayer")
                     WinArgs()  # réinitialisation fenêtre
@@ -338,7 +343,8 @@ class window(Tk):
                     return True
                 try:
                     int(text)+1
-                except:
+                except Exception as e:
+                    print(e)
                     return False
                 return True
 
@@ -390,7 +396,8 @@ class window(Tk):
                 try:
                     self.xls = xlsReader.xlsData(
                         fullPath=self.FilePath, sheet=feuilles.index(self.feuille))
-                except:  # erreur init
+                except Exception as e:  # erreur init
+                    print(e)
                     msgbox.showerror("Erreur initialisation classe",
                                      "la classe n'a pas pu être initialisée, veuillez réessayer")
                     self.destroy()
