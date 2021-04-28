@@ -212,7 +212,7 @@ class window(Tk):
                     self.geometry("{}x{}".format(1000, 400))
                     Label(self, text="Affichage résultat :",
                           font=self.titlefont).pack(anchor=CENTER)
-                    if self.formatage=="rowmat" or self.formatage=="colmat":
+                    if self.formatage == "rowmat" or self.formatage == "colmat":
                         for i in self.retval:
                             Label(self, text=str(i)).pack(
                                 pady=5, padx=5)
@@ -238,13 +238,17 @@ class window(Tk):
                         "Nom de feuille/sheet", "Nom de la feuille de tableur:")
                     try:
                         xls = xlsWriter.xlsWriter(SheetName=sheetname)
-                        dictretval = self.xls.Lecture(
-                            self.Rowstart, self.Rowstop, self.Colstart, self.Colstop, "dict")
+                        if self.formattage != "dict":  # "Conversion" résultat en dictionnaire pour xlsWriter
+                            dictretval = self.xls.Lecture(
+                                self.Rowstart, self.Rowstop, self.Colstart, self.Colstop, "dict")
+                        else:
+                            dictretval = self.retval
                         xls.AddData(dictretval, self.Colstart,
                                     self.Rowstart, autoSave=(True, filename))
                         msgbox.showinfo(
                             "Sauvergarde réussie", "le résultat a été sauvegardé avec succès sous le nom "+filename)
-                    except:
+                    except Exception as e:
+                        print("Exeception reçue :", e)
                         msgbox.showerror(
                             "Erreur sauvegarde", "Une erreur a été rencontrée durant la sauvegarde, veuillez réessayer")
 
@@ -442,10 +446,12 @@ class window(Tk):
         with xlrd.open_workbook(self.FilePath, on_demand=True) as file:
             return (file._sheet_names)
 
+
 def main():
     win = window()
     win.ModuleChoice()  # fenêtre initiale
     win.mainloop()
+
 
 if __name__ == '__main__':  # Exécution
     main()
