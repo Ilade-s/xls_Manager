@@ -22,7 +22,7 @@ import xlutils.copy # joint entre xlrd et xlwt
 import copy # Copie des données (AddData)
 
 class xlsWriter:
-    def __init__(self,FileName="",SheetName="DataSheet"):
+    def __init__(self,FileName="",SheetName="DataSheet", fullPath=""):
         """
         Quand appelée, créé un Workbook object avec une feuille ("DataSheet") qui pourra ensuite être modifié puis sauvegardé
         
@@ -34,23 +34,29 @@ class xlsWriter:
             - SheetName : str
                 - Nom de la feuille/sheet à éditer ou créer
                 - Default = "DataSheet"
+            - fullPath : str
+                - si différent de "", remplace fileName pour l'ouverture de fichier
+                - default = "" (désactivé)
         """
-        if FileName=="": # Nouveau fichier
-            self.FileName = "ExtractedData"
-            self.NewFile = True
-            self.File = xlwt.Workbook() # création tableur
-            self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
-        else: # Fichier existant
+        if FileName!="" or fullPath!="": # Fichier existant
             self.FileName = FileName
-            FileReader = open_workbook("./"+FileName+'.xls', formatting_info=True, on_demand=True)
+            if fullPath=="":
+                FileReader = open_workbook("./"+FileName+'.xls', formatting_info=True, on_demand=True)
+            else:
+                FileReader = open_workbook(fullPath, formatting_info=True, on_demand=True)
             self.File = xlutils.copy.copy(FileReader)
             try:
                 self.Sheet = self.File.get_sheet(SheetName)
             except:
                 self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
             self.NewFile = False
+        else: # Nouveau fichier
+            self.FileName = "ExtractedData"
+            self.NewFile = True
+            self.File = xlwt.Workbook() # création tableur
+            self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
 
-    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,Title=(None,0,0)):
+    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,Title=(None,0,0), autoSave=(False,None)):
         """
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
@@ -70,12 +76,15 @@ class xlsWriter:
                 - Default = 0
             - KeysCol : None || str (optionnel)
                 - Nom de la colonne (clé du dictionnaire Data) contenant les clés
-                - Si None, le programme assume qu'il n'existe pas de clé (des indexs seront mis à la place)
+                - Si None, le programme assume qu'il n'existe pas de clé (les données seront mises sans recherche de clés)
             - Title : tuple(str || None,int,int)
                 - dans l'ordre :
                     - Title[0] : str || None : Titre de la feuille/sheet (si None, la paramètre sera ignoré)
                     - Title[1] : int : coord x (ligne/row)
                     - Title[2] : int : coord y (colonne/column)
+            - AutoSave : tuple(bool, FileName: str || None)
+                - AutoSave[0] : Si true, SaveFile sera immédiatement appellé (si false, AutoSave sera ignoré)
+                - AutoSave[1] : FileName : paramètre de SaveFile(), se reporter à la docstring de SaveFile pour plus d'infos
 
         SORTIE :
         -------------
@@ -96,30 +105,32 @@ class xlsWriter:
         if KeysCol!=None:
             KeyColumn = Data.pop(KeysCol)
             KeyCol = ColumnKeys.pop(ColumnKeys.index(KeysCol))
-        else:
-            KeyColumn = [i for i in range(lenData)]
-            KeyCol = "keys"
         DataColumns = [data for data in Data.values()]
-
         # Debug
         #print(ColumnKeys)
         #print(KeyColumn)
         #print(DataColumns)
-
+        KeyOffset = 0
         # Ajout clés au Workbook
-        self.Sheet.write(RowStart,ColStart,label=KeyCol)
-        for nrow in range(lenData):
-            self.Sheet.write(RowStart+nrow+1,ColStart,label=KeyColumn[nrow])
+        if KeysCol!=None:
+            KeyOffset+=1
+            self.Sheet.write(RowStart,ColStart,label=KeyCol)
+            for nrow in range(lenData):
+                self.Sheet.write(RowStart+nrow+1,ColStart,label=KeyColumn[nrow])
         # Ajout données au Workbook
         for ncol in range(len(ColumnKeys)):
-            self.Sheet.write(RowStart,ColStart+ncol+1,label=ColumnKeys[ncol])
+            self.Sheet.write(RowStart,ColStart+ncol+KeyOffset,label=ColumnKeys[ncol])
             for nrow in range(lenData):
-                self.Sheet.write(RowStart+nrow+1,ColStart+ncol+1,label=DataColumns[ncol][nrow])
+                self.Sheet.write(RowStart+nrow+1,ColStart+ncol+KeyOffset,label=DataColumns[ncol][nrow])
         # Ajout Title (si non None)
         if Title[0]!=None:
             self.Sheet.write(Title[1],Title[2],label=Title[0])
+        
+        (Save, filename) = autoSave
+        if Save:
+            self.SaveFile(filename)
 
-    def DeleteData(self,ColStart=0,RowStart=0,ColEnd=10,RowEnd=10):
+    def DeleteData(self,ColStart=0,RowStart=0,ColEnd=10,RowEnd=10, autoSave=(False,None)):
         """
         Permet de supprimer des données d'une feuille, selon une zone préétablie
 
@@ -153,6 +164,10 @@ class xlsWriter:
         for col in range(ColStart,ColEnd):
             for row in range(RowStart,RowEnd):
                 self.Sheet.write(row,col,label=None)
+        
+        (Save, filename) = autoSave
+        if Save:
+            self.SaveFile(filename)
 
     def SaveFile(self,FileName=None):
         """

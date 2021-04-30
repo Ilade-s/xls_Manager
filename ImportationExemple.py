@@ -12,9 +12,9 @@ xls.AddData(data, KeysCol="keys", Title=("Données",4,4))
 xls.SaveFile() # sauvegarde xls
 
 # importation de xlsReader
-xls = xlsReader.xlsData(0, "ExtractedData", TitleCell=(4,4))
+xls = xlsReader.xlsData(0, "ExtractedData")
 
-ReadData = xls.Lecture(rowstart=0,colstart=0,colstop=3,formattage="dict")
+ReadData = xls.Lecture(rowstart=0,colstart=0,colstop=3,formatage="dict")
 
 print(ReadData) # affichage données récupérées
 
