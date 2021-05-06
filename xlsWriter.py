@@ -16,16 +16,18 @@ Attention à bien lire les docstrings des méthodes afin de ne pas faire d'erreu
 --------------
 
 """
-import xlwt # écriture de fichier xls
-from xlrd import open_workbook # lecture de fichier xls (pour édition de fichier preéxistant)
-import xlutils.copy # joint entre xlrd et xlwt
-import copy # Copie des données (AddData)
+import xlwt  # écriture de fichier xls
+# lecture de fichier xls (pour édition de fichier preéxistant)
+from xlrd import open_workbook
+import xlutils.copy  # joint entre xlrd et xlwt
+import copy  # Copie des données (AddData)
+
 
 class xlsWriter:
-    def __init__(self,FileName="",SheetName="DataSheet", fullPath=""):
+    def __init__(self, FileName="", SheetName="DataSheet", fullPath=""):
         """
         Quand appelée, créé un Workbook object avec une feuille ("DataSheet") qui pourra ensuite être modifié puis sauvegardé
-        
+
         PARAMETRE :
             - FileName : str
                 - Nom du fichier existant à éditer, si vide, crééra un nouvel objet pour édition.
@@ -38,25 +40,29 @@ class xlsWriter:
                 - si différent de "", remplace fileName pour l'ouverture de fichier
                 - default = "" (désactivé)
         """
-        if FileName!="" or fullPath!="": # Fichier existant
+        if FileName != "" or fullPath != "":  # Fichier existant
             self.FileName = FileName
-            if fullPath=="":
-                FileReader = open_workbook("./"+FileName+'.xls', formatting_info=True, on_demand=True)
+            if fullPath == "":
+                FileReader = open_workbook(
+                    "./"+FileName+'.xls', formatting_info=True, on_demand=True)
             else:
-                FileReader = open_workbook(fullPath, formatting_info=True, on_demand=True)
+                FileReader = open_workbook(
+                    fullPath, formatting_info=True, on_demand=True)
             self.File = xlutils.copy.copy(FileReader)
             try:
                 self.Sheet = self.File.get_sheet(SheetName)
             except:
-                self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
+                self.Sheet = self.File.add_sheet(
+                    SheetName, True)  # ajout d'une feuille
             self.NewFile = False
-        else: # Nouveau fichier
+        else:  # Nouveau fichier
             self.FileName = "ExtractedData"
             self.NewFile = True
-            self.File = xlwt.Workbook() # création tableur
-            self.Sheet = self.File.add_sheet(SheetName,True) # ajout d'une feuille
+            self.File = xlwt.Workbook()  # création tableur
+            self.Sheet = self.File.add_sheet(
+                SheetName, True)  # ajout d'une feuille
 
-    def AddData(self,data,ColStart=0,RowStart=0,KeysCol=None,Title=(None,0,0), autoSave=(False,None)):
+    def AddData(self, data, ColStart=0, RowStart=0, KeysCol=None, Title=(None, 0, 0), autoSave=(False, None)):
         """
         Ajoute les données en paramètre Data à la feuille instancée dans __init__
 
@@ -95,42 +101,45 @@ class xlsWriter:
         assert len(Title) == 3, "Paramètre Title invalide (format incorrect)"
         assert ColStart >= 0, "Colonne de départ invalide"
         assert RowStart >= 0, "Ligne de départ invalide"
-        assert KeysCol in Data.keys() or KeysCol==None, "Paramètres KeysCol invalide"
+        assert KeysCol in Data.keys() or KeysCol == None, "Paramètres KeysCol invalide"
         # Extraction clés de colonnes
         ColumnKeys = [key for key in Data.keys()]
         # Calcul nrows data
         for j in Data.values():
             lenData = len(j)
         # Extraction données dict en liste
-        if KeysCol!=None:
+        if KeysCol != None:
             KeyColumn = Data.pop(KeysCol)
             KeyCol = ColumnKeys.pop(ColumnKeys.index(KeysCol))
         DataColumns = [data for data in Data.values()]
         # Debug
-        #print(ColumnKeys)
-        #print(KeyColumn)
-        #print(DataColumns)
+        # print(ColumnKeys)
+        # print(KeyColumn)
+        # print(DataColumns)
         KeyOffset = 0
         # Ajout clés au Workbook
-        if KeysCol!=None:
-            KeyOffset+=1
-            self.Sheet.write(RowStart,ColStart,label=KeyCol)
+        if KeysCol != None:
+            KeyOffset += 1
+            self.Sheet.write(RowStart, ColStart, label=KeyCol)
             for nrow in range(lenData):
-                self.Sheet.write(RowStart+nrow+1,ColStart,label=KeyColumn[nrow])
+                self.Sheet.write(RowStart+nrow+1, ColStart,
+                                 label=KeyColumn[nrow])
         # Ajout données au Workbook
         for ncol in range(len(ColumnKeys)):
-            self.Sheet.write(RowStart,ColStart+ncol+KeyOffset,label=ColumnKeys[ncol])
+            self.Sheet.write(RowStart, ColStart+ncol +
+                             KeyOffset, label=ColumnKeys[ncol])
             for nrow in range(lenData):
-                self.Sheet.write(RowStart+nrow+1,ColStart+ncol+KeyOffset,label=DataColumns[ncol][nrow])
+                self.Sheet.write(RowStart+nrow+1, ColStart +
+                                 ncol+KeyOffset, label=DataColumns[ncol][nrow])
         # Ajout Title (si non None)
-        if Title[0]!=None:
-            self.Sheet.write(Title[1],Title[2],label=Title[0])
-        
+        if Title[0] != None:
+            self.Sheet.write(Title[1], Title[2], label=Title[0])
+
         (Save, filename) = autoSave
         if Save:
             self.SaveFile(filename)
 
-    def DeleteData(self,ColStart=0,RowStart=0,ColEnd=10,RowEnd=10, autoSave=(False,None)):
+    def DeleteData(self, ColStart=0, RowStart=0, ColEnd=10, RowEnd=10, autoSave=(False, None)):
         """
         Permet de supprimer des données d'une feuille, selon une zone préétablie
 
@@ -150,26 +159,26 @@ class xlsWriter:
             - RowEnd : int
                 - Index de la dernière ligne, non incluse (côté bas)
                 - Default = 10
-        
+
         SORTIE : 
         -------------
         Aucune
         """
         # Vérification paramètres
-        assert ColStart>=0, "Colonne de départ invalide"
-        assert RowStart>=0, "Ligne de départ invalide"
-        assert ColEnd-ColStart>=1, "Dernière colonne invalide"
-        assert RowEnd-RowStart>=1, "Dernière ligne invalide"
+        assert ColStart >= 0, "Colonne de départ invalide"
+        assert RowStart >= 0, "Ligne de départ invalide"
+        assert ColEnd-ColStart >= 1, "Dernière colonne invalide"
+        assert RowEnd-RowStart >= 1, "Dernière ligne invalide"
         # Suppression de l'intervalle 2D
-        for col in range(ColStart,ColEnd):
-            for row in range(RowStart,RowEnd):
-                self.Sheet.write(row,col,label=None)
-        
+        for col in range(ColStart, ColEnd):
+            for row in range(RowStart, RowEnd):
+                self.Sheet.write(row, col, label=None)
+
         (Save, filename) = autoSave
         if Save:
             self.SaveFile(filename)
 
-    def SaveFile(self,FileName=None):
+    def SaveFile(self, FileName=None):
         """
         Sauvegarde le fichier xls
 
@@ -179,19 +188,21 @@ class xlsWriter:
                 - Nom du fichier à enregistrer
                 - default = None (le nom sera : {OriginalFileName}_Edited.xls )
         """
-        if self.NewFile: # Création d'un nouveau fichier
-            if FileName==None:
-                self.File.save(self.FileName+".xls") # Sauvegarde
+        if self.NewFile:  # Création d'un nouveau fichier
+            if FileName == None:
+                self.File.save(self.FileName+".xls")  # Sauvegarde
             else:
-                FileName = str(FileName) # Conversion en string (si int ou float)
-                self.File.save(FileName+".xls") # Sauvegarde
-        else: # Edition de fichier preéxistant
-            if FileName==None:
-                self.File.save(self.FileName+"_Edited"+".xls") # Sauvegarde
+                # Conversion en string (si int ou float)
+                FileName = str(FileName)
+                self.File.save(FileName+".xls")  # Sauvegarde
+        else:  # Edition de fichier preéxistant
+            if FileName == None:
+                self.File.save(self.FileName+"_Edited"+".xls")  # Sauvegarde
             else:
-                self.File.save(FileName+".xls") # Sauvegarde
+                self.File.save(FileName+".xls")  # Sauvegarde
 
-if __name__=="__main__": # test
+
+if __name__ == "__main__":  # test
     print("=============================================")
     print("Bienvenue dans mon programme/module d'édition de fichier xls")
     print("Vous pouvez lancer des test pour créer, dans l'ordre :")
@@ -202,22 +213,23 @@ if __name__=="__main__": # test
     print("=============================================")
     print("Appuyez sur entrée pour continuer...")
     input()
-    
-    data = {"keys":[chr(65+i) for i in range(10)],"data":[i for i in range(10)],"d":[i for i in range(10)],"da":[i for i in range(10)]}
+
+    data = {"keys": [chr(65+i) for i in range(10)], "data": [i for i in range(10)],
+            "d": [i for i in range(10)], "da": [i for i in range(10)]}
     print(data)
 
     # Création du fichier ExtractedData.xls
-    xls = xlsWriter() # création workbook
-    xls.AddData(data, KeysCol="keys", Title=("Données originales",6,6))
-    xls.SaveFile() # sauvegarde xls
+    xls = xlsWriter()  # création workbook
+    xls.AddData(data, KeysCol="keys", Title=("Données originales", 6, 6))
+    xls.SaveFile()  # sauvegarde xls
 
-    # Edition du fichier ExtractedData.xls 
-    xls = xlsWriter(FileName="ExtractedData",SheetName="NewSheet") # création workbook
-    xls.AddData(data, KeysCol="keys", ColStart=2, Title=("EditedData",0,0))
-    xls.SaveFile() # sauvegarde xls
+    # Edition du fichier ExtractedData.xls
+    xls = xlsWriter(FileName="ExtractedData",
+                    SheetName="NewSheet")  # création workbook
+    xls.AddData(data, KeysCol="keys", ColStart=2, Title=("EditedData", 0, 0))
+    xls.SaveFile()  # sauvegarde xls
 
     # Suppression ligne données 4 de ExtractedData.xls sous le nom Data_Del.xls
     xls = xlsWriter(FileName="ExtractedData")
-    xls.DeleteData(ColStart=3,ColEnd=4,RowEnd=11)
+    xls.DeleteData(ColStart=3, ColEnd=4, RowEnd=11)
     xls.SaveFile(FileName="Data_Del")
-    
