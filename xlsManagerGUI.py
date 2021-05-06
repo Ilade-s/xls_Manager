@@ -344,7 +344,7 @@ class window(Tk):
                 try:
                     int(text)+1
                 except Exception as e:
-                    print(e)
+                    #print(e)
                     return False
                 return True
 
@@ -435,8 +435,116 @@ class window(Tk):
         """
         Fenêtre pour le module d'xlsPlot
         """
+        def ConfirmationArgs():
+            """
+            Action lors de la confirmation des paramètres
+            """
+            self.xls = xlsPlot.xlsDB()
+            self.xls.DiagrammeMultiBarres()
+
+        def WinArgs():
+            """
+            Deuxième partie de la fenêtre, permet de récupérer les paramètres nécessaires à la fonction choisie
+            """
+            self.Rowstart = StringVar()
+            self.Rowstart.set("0")
+            self.Rowstop = StringVar()
+            self.Colstart = StringVar()
+            self.Colstart.set("0")
+            self.Colstop = StringVar()
+            self.Colstop.set("0")
+            self.formatage = StringVar()
+
+            def IntValidate(text):
+                """
+                vérifie si l'entrée est une string convertible en integer
+                """
+                if text == "":
+                    return True
+                try:
+                    int(text)+1
+                except Exception as e:
+                    #print(e)
+                    return False
+                return True
+
+            IntValid = self.register(IntValidate)
+
+            self.ClearWindow()  # nettoyage fenêtre
+            self.title(self.fonction+" : récupération des arguments")
+            # Widgets de récupération
+            # Valeurs numériques (zone de lecture)
+            Label(self, text="Ligne de départ :").pack(
+                pady=5, padx=10, anchor="w")
+            Entry(self, textvariable=self.Rowstart, justify=LEFT, validate="key",
+                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+            Label(self, text="Ligne de fin (laisser vide pour ligne maximale) :").pack(
+                pady=5, padx=10, anchor="w")
+            Entry(self, textvariable=self.Rowstop, justify=LEFT, validate="key",
+                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+            Label(self, text="Colonne de départ :").pack(
+                pady=5, padx=10, anchor="w")
+            Entry(self, textvariable=self.Colstart, justify=LEFT, validate="key",
+                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+            Label(self, text="Colonne de fin :").pack(
+                pady=5, padx=10, anchor="w")
+            Entry(self, textvariable=self.Colstop, justify=LEFT, validate="key",
+                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+            # formatage
+            self.formatage.set("colmat")
+            Label(self, text="Formatage").pack(pady=15, padx=10, anchor="w")
+            Radiobutton(self, text="- Matrice en colonne : cols[col[rows],...]", variable=self.formatage,
+                        value="colmat", command=lambda: ExitButton.configure(state="normal")).pack(anchor="w", padx=30)
+            Radiobutton(self, text="- Matrice en ligne : rows[row[col],...]", variable=self.formatage,
+                        value="rowmat", command=lambda: ExitButton.configure(state="normal")).pack(anchor="w", padx=30)
+            Radiobutton(self, text="- Dictionnaire des colonnes : cols{col[0] :[col[1:]],...}", variable=self.formatage,
+                        value="dict", command=lambda: ExitButton.configure(state="normal")).pack(anchor="w", padx=30)
+            # Bouton de confirmation
+            ExitButton = Button(
+                self, text="Confirmer", command=ConfirmationArgs, width=20, state="disabled")
+            ExitButton.place(x=210, y=350)
+
+
+        def ConfirmationInit():
+            """
+            Action lors de la confirmation des paramètres pour l'initialisation
+            """
+            if sheetChoice.get() in feuilles:  # feuille choisie
+                # Récupération paramètres
+                self.feuille = sheetChoice.get()
+                print("feuille choisie :", self.feuille)
+                # initialisation de la classe
+                try:
+                    self.xls = xlsReader.xlsData(
+                        fullPath=self.FilePath, sheet=feuilles.index(self.feuille))
+                except Exception as e:  # erreur init
+                    print(e)
+                    msgbox.showerror("Erreur initialisation classe",
+                                     "la classe n'a pas pu être initialisée, veuillez réessayer")
+                    self.destroy()
+                print("Classe initialisée")
+            else:  # feuille non spécifiée
+                msgbox.showinfo("Feuille indéfinie",
+                                "La feuille à lire n'a pas été spécifiée")
+
+            WinArgs()  # Récupération arguments (2e fenêtre)
+
         self.title("xlsReader : paramètres")
-        # Placement widgets
+        # Placement widgets args initialisation
+        feuilles = self.GetSheets()
+        sheetChoice = StringVar()
+        sheetChoice.set("")
+
+        Label(self, text="Feuille à lire (sheet) :",
+              font=self.font).pack(padx=10, anchor="w")
+        # Donne la liste des feuilles du fichier, permettant à l'utilisateur d'en choisir une
+        Combobox(self, values=feuilles, width=max(
+            [len(f) for f in feuilles]), state="readonly", textvariable=sheetChoice, height=30).pack(padx=20, anchor="w")
+
+        # Bouton de confirmation
+        ExitButton = Button(self, text="Confirmer",
+                            command=ConfirmationInit, width=20)
+        ExitButton.place(x=210, y=350)
 
     def ClearWindow(self):
         """

@@ -74,9 +74,10 @@ class xlsData:
         
         SORTIE : 
         -----------
-            - MatData : list[list[any]]
+            - MatData : list[list[any]] || cols{col[0]:[col[1:]],...}
                 - Matrice contenant les données 
                 - format selon le paramètre "format"
+
 
         """
         # Vérification des paramètres
