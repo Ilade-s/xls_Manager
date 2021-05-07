@@ -238,7 +238,7 @@ class window(Tk):
                         "Nom de feuille/sheet", "Nom de la feuille de tableur:")
                     try:
                         xls = xlsWriter.xlsWriter(SheetName=sheetname)
-                        if self.formattage != "dict":  # "Conversion" résultat en dictionnaire pour xlsWriter
+                        if self.formatage != "dict":  # "Conversion" résultat en dictionnaire pour xlsWriter
                             dictretval = self.xls.Lecture(
                                 self.Rowstart, self.Rowstop, self.Colstart, self.Colstop, "dict")
                         else:
