@@ -38,6 +38,21 @@ import os  # Pour trouver le répertoire courant (os.getcwd)
 from tkinter.ttk import *  # meilleurs widgets
 import xlrd  # récupération des feuilles/sheets
 import tkinter.messagebox as msgbox  # Messages d'information ou d'avertissement
+from functools import partial # appel fonctions avec paramètres tkinter
+
+
+def IntValidate(text):
+    """
+    vérifie si l'entrée est une string convertible en integer
+    """
+    if text == "":
+        return True
+    try:
+        int(text)+1
+    except Exception as e:
+        # print(e)
+        return False
+    return True
 
 
 class window(Tk):
@@ -66,6 +81,7 @@ class window(Tk):
         self.fonction = ""
         self.Module = ""
         self.FilePath = ""
+        self.IntValid = self.register(IntValidate)
 
     def ModuleChoice(self):
         """
@@ -335,20 +351,7 @@ class window(Tk):
             self.Colstop.set("0")
             self.formatage = StringVar()
 
-            def IntValidate(text):
-                """
-                vérifie si l'entrée est une string convertible en integer
-                """
-                if text == "":
-                    return True
-                try:
-                    int(text)+1
-                except Exception as e:
-                    #print(e)
-                    return False
-                return True
-
-            IntValid = self.register(IntValidate)
+            self.IntValid = self.register(self.IntValidate)
 
             self.ClearWindow()  # nettoyage fenêtre
             self.title(self.fonction+" : récupération des arguments")
@@ -357,19 +360,19 @@ class window(Tk):
             Label(self, text="Ligne de départ :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Rowstart, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             Label(self, text="Ligne de fin (laisser vide pour ligne maximale) :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Rowstop, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             Label(self, text="Colonne de départ :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Colstart, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             Label(self, text="Colonne de fin :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Colstop, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             # formatage
             self.formatage.set("colmat")
             Label(self, text="Formatage").pack(pady=15, padx=10, anchor="w")
@@ -455,41 +458,26 @@ class window(Tk):
             self.Colstop.set("0")
             self.formatage = StringVar()
 
-            def IntValidate(text):
-                """
-                vérifie si l'entrée est une string convertible en integer
-                """
-                if text == "":
-                    return True
-                try:
-                    int(text)+1
-                except Exception as e:
-                    #print(e)
-                    return False
-                return True
-
-            IntValid = self.register(IntValidate)
-
             self.ClearWindow()  # nettoyage fenêtre
-            self.title(self.fonction+" : récupération des arguments")
+            self.title(f"{self.fonction} : récupération des arguments")
             # Widgets de récupération
             # Valeurs numériques (zone de lecture)
             Label(self, text="Ligne de départ :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Rowstart, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             Label(self, text="Ligne de fin (laisser vide pour ligne maximale) :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Rowstop, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             Label(self, text="Colonne de départ :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Colstart, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             Label(self, text="Colonne de fin :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Colstop, justify=LEFT, validate="key",
-                  validatecommand=(IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             # formatage
             self.formatage.set("colmat")
             Label(self, text="Formatage").pack(pady=15, padx=10, anchor="w")
@@ -504,19 +492,28 @@ class window(Tk):
                 self, text="Confirmer", command=ConfirmationArgs, width=20, state="disabled")
             ExitButton.place(x=210, y=350)
 
-
-        def ConfirmationInit():
+        def ConfirmationInit(tx,ty):
             """
             Action lors de la confirmation des paramètres pour l'initialisation
             """
+            if IntValidate(tx.get()) and IntValidate(ty.get()): # Vérif coords valides
+                if int(tx.get())>=0 and int(ty.get())>=0:
+                    tx = int(tx.get())
+                    ty = int(ty.get())
+                else: # si erreur, réinitialisation
+                    msgbox.showwarning("Coords titre invalides",
+                                     "Les coordonnées du titre ne sont pas valides, veuillez réessayer")
+                    self.WinXlsPlot()
+                    return 0
+
             if sheetChoice.get() in feuilles:  # feuille choisie
                 # Récupération paramètres
                 self.feuille = sheetChoice.get()
                 print("feuille choisie :", self.feuille)
                 # initialisation de la classe
                 try:
-                    self.xls = xlsReader.xlsData(
-                        fullPath=self.FilePath, sheet=feuilles.index(self.feuille))
+                    self.xls = xlsPlot.xlsDB(
+                        fullPath=self.FilePath, sheet=feuilles.index(self.feuille),TitleCell=(tx,ty))
                 except Exception as e:  # erreur init
                     print(e)
                     msgbox.showerror("Erreur initialisation classe",
@@ -524,26 +521,40 @@ class window(Tk):
                     self.destroy()
                 print("Classe initialisée")
             else:  # feuille non spécifiée
-                msgbox.showinfo("Feuille indéfinie",
+                msgbox.showwarning("Feuille indéfinie",
                                 "La feuille à lire n'a pas été spécifiée")
 
             WinArgs()  # Récupération arguments (2e fenêtre)
 
         self.title("xlsReader : paramètres")
         # Placement widgets args initialisation
+        tx = StringVar()
+        ty = StringVar()
+        tx.set("0")
+        ty.set("0")
         feuilles = self.GetSheets()
         sheetChoice = StringVar()
         sheetChoice.set("")
 
         Label(self, text="Feuille à lire (sheet) :",
-              font=self.font).pack(padx=10, anchor="w")
+            font=self.font).pack(padx=10, anchor="w")
         # Donne la liste des feuilles du fichier, permettant à l'utilisateur d'en choisir une
         Combobox(self, values=feuilles, width=max(
             [len(f) for f in feuilles]), state="readonly", textvariable=sheetChoice, height=30).pack(padx=20, anchor="w")
-
+        # Demande la cellule contenant le titre
+        Label(self, text="Placement titre :\ncoord x :",
+            font=self.font).pack(
+            pady=5, padx=10, anchor="w")
+        Entry(self, textvariable=tx, justify=LEFT, validate="key",
+              validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+        Label(self, text="coord y :",
+            font=self.font).pack(
+            pady=5, padx=10, anchor="w")
+        Entry(self, textvariable=ty, justify=LEFT, validate="key",
+              validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
         # Bouton de confirmation
         ExitButton = Button(self, text="Confirmer",
-                            command=ConfirmationInit, width=20)
+                            command=partial(ConfirmationInit,tx,ty), width=20)
         ExitButton.place(x=210, y=350)
 
     def ClearWindow(self):
