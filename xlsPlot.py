@@ -37,8 +37,9 @@ class xlsDB:
             - nom du fichier xls à ouvrir
             - default = "pop-16ans-dipl6817"
 
-        - TitleCell : tuple(int,int)
-            - coordonnées de la cellule contenant le titre de la feuille souhaité
+        - TitleCell : tuple(int,int) || str
+            - si tuple : coordonnées de la cellule contenant le titre de la feuille souhaité
+            - si string, sera le titre de la feuille
             - default = (0,0)
 
         - fullPath : str
@@ -46,8 +47,12 @@ class xlsDB:
             - default = "" (désactivé)
         """
         # Vérification paramètres
-        for i in TitleCell:
-            assert i >= 0
+        if type(TitleCell)!=type("aaa"): # si non string
+            for i in TitleCell:
+                assert i >= 0
+        else: # si string
+            self.Title = TitleCell
+            
         assert sheet >= 0
 
         # Ouverture fichier xls
@@ -59,8 +64,9 @@ class xlsDB:
                 self.Data = file.get_sheet(sheet)
 
         # Extraction titre feuille
-        (rowx, columnx) = TitleCell
-        self.Title = self.Data.cell_value(rowx, columnx)
+        if type(TitleCell)!=type("aaa"): # si non string
+            (rowx, columnx) = TitleCell
+            self.Title = self.Data.cell_value(rowx, columnx)
 
     def DiagrammeMultiBarres(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0, 20.0), PlotSave=(False, "plot")):
         """
