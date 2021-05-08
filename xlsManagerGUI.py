@@ -3,9 +3,9 @@ xlsManagerGUI (interface graphique des trois modules)
 ------------------
 
 MODULES UTILISABLES : 
-    - xlsPlot : création de graphiques à partir d'un fichier
-    - xlsWriter : édition de fichier xls
-    - xlsReader : lecture de fichier xls
+    - xlsPlot : création de graphiques à partir d'un fichier (à faire)
+    - xlsWriter : édition de fichier xls (en cours)
+    - xlsReader : lecture de fichier xls (terminé)
 
 FONCTIONNEMENT :
     - Tout se passe dans l'interface graphique (ni console, ni python)
@@ -21,15 +21,18 @@ FONCTIONNEMENT :
             - 6 : Demandes éventuelles (sauvegarde...)
 
 MODULES UTILISES : (en plus des trois modules)
-    - tkinter (interface graphique)
+    - tkinter (interface graphique) :
+        - ttk : widgets plus modernes
+        - filedialog : ouverture/sauvegarde de fichiers (I/O)
+        - simpledialog : demandes d'infos simples
+        - messagebox : messages d'avertissement et d'erreur
     - matplotlib (graphiques)
     - pandas
     - numpy
     - xlrd, xlwd et xlutils (gestion de fichiers xls)
 """
 
-from tkinter import *
-from tkinter import ttk  # interface graphique
+from tkinter import * # interface graphique
 import xlsPlot  # Création de graphiques
 import xlsReader  # Edition de fichiers xls
 import xlsWriter  # Lecture de fichier xls
@@ -52,7 +55,6 @@ def IntValidate(text):
         # print(e)
         return False
     return True
-
 
 class window(Tk):
     def __init__(self, master=None, titlefont=("Arial", 13), font=("Arial", 11)):
@@ -585,7 +587,8 @@ class window(Tk):
             font=self.font).pack(padx=10, anchor="w")
         # Donne la liste des feuilles du fichier, permettant à l'utilisateur d'en choisir une
         Combobox(self, values=feuilles, width=max(
-            [len(f) for f in feuilles]), state="readonly", textvariable=sheetChoice, height=30).pack(padx=20, anchor="w")
+            [len(f) for f in feuilles]), state="readonly", textvariable=sheetChoice, height=30
+            ).pack(padx=20, anchor="w")
         # Demande la facon de choisir un titre pour le graphique
         Radiobutton(self, text="Entrée d'un titre personnalisé", command=TitleChoice,
                     variable=ttlvalue, value=1).pack(anchor="w", padx=10)
