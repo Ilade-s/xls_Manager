@@ -329,7 +329,7 @@ class window(Tk):
                 try:
                     self.retval = self.xls.Lecture(
                         self.Rowstart, self.Rowstop, self.Colstart, self.Colstop, self.formatage)
-                    print("Résultat :", self.retval)
+                    print(f"Résultat : {self.retval}")
                     WinRetFunc()  # Affichage fenêtre finale (résultat)
                 except Exception as e:
                     print(e)
@@ -351,10 +351,8 @@ class window(Tk):
             self.Colstop.set("0")
             self.formatage = StringVar()
 
-            self.IntValid = self.register(self.IntValidate)
-
             self.ClearWindow()  # nettoyage fenêtre
-            self.title(self.fonction+" : récupération des arguments")
+            self.title(f"{self.fonction} : récupération des arguments")
             # Widgets de récupération
             # Valeurs numériques (zone de lecture)
             Label(self, text="Ligne de départ :").pack(

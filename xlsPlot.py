@@ -109,6 +109,7 @@ class xlsDB:
             - Le fichier sera enregistré au format png
             - PlotSave[0] : bool : Indique si le graphisque doit être sauvegardé ou non
                 - si False, PlotSave sera ignoré
+                - si True, le plot ne sera pas affiché
                 - default = False
             - PlotSave[1] : str : nom de fichier à utiliser
                 - default = "plot"
@@ -184,7 +185,8 @@ class xlsDB:
         if Save:
             plt.savefig(SaveName)
         # Affichage diagramme
-        plt.show()
+        else:    
+            plt.show()
 
     def DiagrammeMultiCirculaire(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0, 20.0), PlotSave=(False, "plot")):
         """
@@ -236,6 +238,7 @@ class xlsDB:
             - Le fichier sera enregistré au format png
             - PlotSave[0] : bool : Indique si le graphisque doit être sauvegardé ou non
                 - si False, PlotSave sera ignoré
+                - si True, le plot ne sera pas affiché
                 - default = False
             - PlotSave[1] : str : nom de fichier à utiliser
                 - default = "plot"
@@ -348,7 +351,8 @@ class xlsDB:
         if Save:
             plt.savefig(SaveName)
         # Affichage graphique
-        plt.show()
+        else:    
+            plt.show()
 
 
 # Tests des fonctions
