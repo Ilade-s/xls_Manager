@@ -29,10 +29,10 @@ MODULES UTILISES : (en plus des trois modules)
     - matplotlib (graphiques)
     - pandas
     - numpy
-    - xlrd, xlwd et xlutils (gestion de fichiers xls)
+    - xlrd, xlwd et xlutils (gestion de fichiers xls) : utilisés par les sous modules
 """
 
-from tkinter import * # interface graphique
+from tkinter import *  # interface graphique
 import xlsPlot  # Création de graphiques
 import xlsReader  # Edition de fichiers xls
 import xlsWriter  # Lecture de fichier xls
@@ -40,8 +40,8 @@ import tkinter.filedialog as fldialog  # Choix du fichier
 from tkinter.simpledialog import askstring  # récupéaration nom pour sauvergarde
 import os  # Pour trouver le répertoire courant (os.getcwd)
 from tkinter.ttk import *  # meilleurs widgets
-import xlrd  # récupération des feuilles/sheets
 import tkinter.messagebox as msgbox  # Messages d'information ou d'avertissement
+
 
 def IntValidate(text):
     """
@@ -55,6 +55,7 @@ def IntValidate(text):
         # print(e)
         return False
     return True
+
 
 class window(Tk):
     def __init__(self, master=None, titlefont=("Arial", 13), font=("Arial", 11)):
@@ -504,17 +505,17 @@ class window(Tk):
             """
             Action lors de la confirmation des paramètres pour l'initialisation
             """
-            if ttlvalue.get()==2: # vérification et récupération des coordonnées
-                if IntValidate(tx.get()) and IntValidate(ty.get()): # Vérif coords valides
-                    if int(tx.get())>=0 and int(ty.get())>=0:
-                        self.TitleCell = (int(tx.get()),int(ty.get()))
+            if ttlvalue.get() == 2:  # vérification et récupération des coordonnées
+                if IntValidate(tx.get()) and IntValidate(ty.get()):  # Vérif coords valides
+                    if int(tx.get()) >= 0 and int(ty.get()) >= 0:
+                        self.TitleCell = (int(tx.get()), int(ty.get()))
                         print(f"Coords titre : {tx.get()}x ; {ty.get()}y")
-                    else: # si erreur, réinitialisation
+                    else:  # si erreur, réinitialisation
                         msgbox.showwarning("Coords titre invalides",
-                                        "Les coordonnées du titre ne sont pas valides, veuillez réessayer")
+                                           "Les coordonnées du titre ne sont pas valides, veuillez réessayer")
                         self.WinXlsPlot()
                         return 0
-            else: # récupération du titre
+            else:  # récupération du titre
                 self.TitleCell = ttlvar.get()
                 print(f"Titre graphique : {self.TitleCell}")
 
@@ -525,7 +526,7 @@ class window(Tk):
                 # initialisation de la classe
                 try:
                     self.xls = xlsPlot.xlsDB(
-                        fullPath=self.FilePath, sheet=feuilles.index(self.feuille),TitleCell=self.TitleCell)
+                        fullPath=self.FilePath, sheet=feuilles.index(self.feuille), TitleCell=self.TitleCell)
                 except Exception as e:  # erreur init
                     print(e)
                     msgbox.showerror("Erreur initialisation classe",
@@ -534,7 +535,7 @@ class window(Tk):
                 print("Classe initialisée")
             else:  # feuille non spécifiée
                 msgbox.showwarning("Feuille indéfinie",
-                                "La feuille à lire n'a pas été spécifiée")
+                                   "La feuille à lire n'a pas été spécifiée")
 
             WinArgs()  # Récupération arguments (2e fenêtre)
 
@@ -548,7 +549,7 @@ class window(Tk):
                 for f in self.ttlwidgets:
                     f.destroy()
                 self.ttlwidgets = []
-            if ttlvalue.get()==1: # Choix direct du titre (str)
+            if ttlvalue.get() == 1:  # Choix direct du titre (str)
                 # ajout widgets
                 self.ttlwidgets.append(
                     Label(self, text="Titre :", font=self.font))
@@ -557,26 +558,26 @@ class window(Tk):
                 self.ttlwidgets.append(
                     Entry(self, textvariable=ttlvar, justify=LEFT))
                 self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
-            else: # donc 2 : Choix d'une cellule (tuple)
+            else:  # donc 2 : Choix d'une cellule (tuple)
                 # Demande la cellule contenant le titre
                 self.ttlwidgets.append(
-                    Label(self, text="Placement titre :\ncoord x :",font=self.font))
+                    Label(self, text="Placement titre :\ncoord x :", font=self.font))
                 self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
 
                 self.ttlwidgets.append(
                     Entry(self, textvariable=tx, justify=LEFT, validate="key",
-                        validatecommand=(self.IntValid, "%P")))
+                          validatecommand=(self.IntValid, "%P")))
                 self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
 
-                self.ttlwidgets.append(    
+                self.ttlwidgets.append(
                     Label(self, text="coord y :", font=self.font))
                 self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
 
                 self.ttlwidgets.append(
                     Entry(self, textvariable=ty, justify=LEFT, validate="key",
-                        validatecommand=(self.IntValid, "%P")))
+                          validatecommand=(self.IntValid, "%P")))
                 self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
-            
+
         self.title("xlsReader : paramètres")
         # Placement widgets args initialisation
         feuilles = xlsReader.xlsData._GetSheets(self.FilePath)
@@ -584,11 +585,11 @@ class window(Tk):
         sheetChoice.set("")
 
         Label(self, text="Feuille à lire (sheet) :",
-            font=self.font).pack(padx=10, anchor="w")
+              font=self.font).pack(padx=10, anchor="w")
         # Donne la liste des feuilles du fichier, permettant à l'utilisateur d'en choisir une
         Combobox(self, values=feuilles, width=max(
             [len(f) for f in feuilles]), state="readonly", textvariable=sheetChoice, height=30
-            ).pack(padx=20, anchor="w")
+        ).pack(padx=20, anchor="w")
         # Demande la facon de choisir un titre pour le graphique
         Radiobutton(self, text="Entrée d'un titre personnalisé", command=TitleChoice,
                     variable=ttlvalue, value=1).pack(anchor="w", padx=10)
