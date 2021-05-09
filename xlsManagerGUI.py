@@ -27,9 +27,10 @@ MODULES UTILISES : (en plus des trois modules)
         - simpledialog : demandes d'infos simples
         - messagebox : messages d'avertissement et d'erreur
     - matplotlib (graphiques)
-    - pandas
-    - numpy
-    - xlrd, xlwd et xlutils (gestion de fichiers xls) : utilisés par les sous modules
+    - Utilisés par les sous modules :
+        - pandas
+        - numpy
+        - xlrd, xlwd et xlutils (gestion de fichiers xls)
 """
 
 from tkinter import *  # interface graphique
@@ -45,7 +46,7 @@ import tkinter.messagebox as msgbox  # Messages d'information ou d'avertissement
 
 def IntValidate(text):
     """
-    vérifie si l'entrée est une string convertible en integer
+    vérifie si l'entrée est une string convertible en integer ou vide
     """
     if text == "":
         return True
@@ -307,7 +308,7 @@ class window(Tk):
             try:
                 self.Rowstop = int(self.Rowstop.get())
             except Exception as e:
-                print(e)
+                #print(e)
                 self.Rowstop = None
             try:
                 self.Colstart = int(self.Colstart.get())
@@ -326,6 +327,15 @@ class window(Tk):
                 WinArgs()  # réinitialisation fenêtre
                 return 0
             self.formatage = self.formatage.get()
+            # affichage paramètres console (debug)
+            print("=======================================")
+            print("Paramètres :")
+            print(f"\tLigne de départ : {self.Rowstart}")
+            print(f"\tLigne de fin : {self.Rowstop}")
+            print(f"\tColonne des clés : {self.Colstart}")
+            print(f"\tColonnes de donnée : {self.Colstop}")
+            print(f"\tFormatage : {self.formatage}")
+            print("=======================================")
             # appel fonction
             if self.fonction == xlsReader.xlsData.Lecture.__name__:
                 try:
@@ -451,54 +461,83 @@ class window(Tk):
             """
             Action lors de la confirmation des paramètres
             """
-            self.xls = xlsPlot.xlsDB()
-            self.xls.DiagrammeMultiBarres()
+            # ligne de départ
+            try:
+                self.Start = int(self.Start.get())
+            except Exception as e:
+                print(e)
+                msgbox.showwarning(
+                    "Ligne de départ invalide", "La valeur indiquée est invalide (laissé vide ?)")
+                WinArgs()  # réinitialisation fenêtre
+                return 0
+            # ligne de fin
+            try:
+                self.Stop = int(self.Rowstop.get())
+            except Exception as e:
+                #print(e)
+                self.Stop = None   
+            # colonne des clés
+            try:
+                self.KeyCol = int(self.KeyColbox.get())
+            except Exception as e:
+                print(e)
+                msgbox.showwarning(
+                    "Colonne des clés invalide", "La valeur indiquée est invalide (laissé vide ?)")
+                WinArgs()  # réinitialisation fenêtre
+                return 0
+            # colonnes de données
+            try:
+                self.DataCols = [int(c) for c in self.DataCols.get().split(" ")]
+            except Exception as e:
+                print(e)
+                msgbox.showwarning(
+                    "Colonnes des données invalide", "Une ou plusieurs colonnes sont invalides (laissé vide ?)")
+                WinArgs()  # réinitialisation fenêtre
+                return 0
+            # Affichage console des paramètres (debug)
+            print("=======================================")
+            print("Paramètres :")
+            print(f"\tLigne de départ : {self.Start}")
+            print(f"\tLigne de fin : {self.Stop}")
+            print(f"\tColonne des clés : {self.KeyCol}")
+            print(f"\tColonnes de donnée : {self.DataCols}")
+            print("=======================================")
 
         def WinArgs():
             """
             Deuxième partie de la fenêtre, permet de récupérer les paramètres nécessaires à la fonction choisie
             """
-            self.Rowstart = StringVar()
-            self.Rowstart.set("0")
-            self.Rowstop = StringVar()
-            self.Colstart = StringVar()
-            self.Colstart.set("0")
-            self.Colstop = StringVar()
-            self.Colstop.set("0")
-            self.formatage = StringVar()
+            self.Start = StringVar()
+            self.Start.set("0")
+            self.Stop = StringVar()
+            self.DataCols = StringVar()
+            self.DataCols.set("1")
 
             self.ClearWindow()  # nettoyage fenêtre
             self.title(f"{self.fonction} : récupération des arguments")
             # Widgets de récupération
-            # Valeurs numériques (zone de lecture)
+            # Récupération intervalle des lignes
             Label(self, text="Ligne de départ :").pack(
                 pady=5, padx=10, anchor="w")
-            Entry(self, textvariable=self.Rowstart, justify=LEFT, validate="key",
+            Entry(self, textvariable=self.Start, justify=LEFT, validate="key",
                   validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             Label(self, text="Ligne de fin (laisser vide pour ligne maximale) :").pack(
                 pady=5, padx=10, anchor="w")
-            Entry(self, textvariable=self.Rowstop, justify=LEFT, validate="key",
+            Entry(self, textvariable=self.Stop, justify=LEFT, validate="key",
                   validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
-            Label(self, text="Colonne de départ :").pack(
+            # Récupération colonnes à exploiter
+            # Colonne des clés
+            Label(self, text="Colonne des clés :").pack(
                 pady=5, padx=10, anchor="w")
-            Entry(self, textvariable=self.Colstart, justify=LEFT, validate="key",
-                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
-            Label(self, text="Colonne de fin :").pack(
-                pady=5, padx=10, anchor="w")
-            Entry(self, textvariable=self.Colstop, justify=LEFT, validate="key",
-                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
-            # formatage
-            self.formatage.set("colmat")
-            Label(self, text="Formatage").pack(pady=15, padx=10, anchor="w")
-            Radiobutton(self, text="- Matrice en colonne : cols[col[rows],...]", variable=self.formatage,
-                        value="colmat", command=lambda: ExitButton.configure(state="normal")).pack(anchor="w", padx=30)
-            Radiobutton(self, text="- Matrice en ligne : rows[row[col],...]", variable=self.formatage,
-                        value="rowmat", command=lambda: ExitButton.configure(state="normal")).pack(anchor="w", padx=30)
-            Radiobutton(self, text="- Dictionnaire des colonnes : cols{col[0] :[col[1:]],...}", variable=self.formatage,
-                        value="dict", command=lambda: ExitButton.configure(state="normal")).pack(anchor="w", padx=30)
+            self.KeyColbox = Spinbox(self, justify=LEFT, validate="key",
+                  validatecommand=(self.IntValid, "%P"), from_=.0, to=10000)
+            self.KeyColbox.set("0")
+            self.KeyColbox.pack(pady=5, padx=10, anchor="w")
+            # Colonnes de donnée
+
             # Bouton de confirmation
             ExitButton = Button(
-                self, text="Confirmer", command=ConfirmationArgs, width=20, state="disabled")
+                self, text="Confirmer", command=ConfirmationArgs, width=20, state="normal")
             ExitButton.place(x=210, y=350)
 
         def ConfirmationInit():
@@ -509,7 +548,6 @@ class window(Tk):
                 if IntValidate(tx.get()) and IntValidate(ty.get()):  # Vérif coords valides
                     if int(tx.get()) >= 0 and int(ty.get()) >= 0:
                         self.TitleCell = (int(tx.get()), int(ty.get()))
-                        print(f"Coords titre : {tx.get()}x ; {ty.get()}y")
                     else:  # si erreur, réinitialisation
                         msgbox.showwarning("Coords titre invalides",
                                            "Les coordonnées du titre ne sont pas valides, veuillez réessayer")
@@ -517,7 +555,6 @@ class window(Tk):
                         return 0
             else:  # récupération du titre
                 self.TitleCell = ttlvar.get()
-                print(f"Titre graphique : {self.TitleCell}")
 
             if sheetChoice.get() in feuilles:  # feuille choisie
                 # Récupération paramètres
@@ -527,6 +564,7 @@ class window(Tk):
                 try:
                     self.xls = xlsPlot.xlsDB(
                         fullPath=self.FilePath, sheet=feuilles.index(self.feuille), TitleCell=self.TitleCell)
+                    print(f"Titre graphique : {self.xls.Title}")
                 except Exception as e:  # erreur init
                     print(e)
                     msgbox.showerror("Erreur initialisation classe",
@@ -553,7 +591,7 @@ class window(Tk):
                 # ajout widgets
                 self.ttlwidgets.append(
                     Label(self, text="Titre :", font=self.font))
-                self.ttlwidgets[-1].pack(padx=10, anchor="w")
+                self.ttlwidgets[-1].pack(padx=10, anchor="w", pady=10)
 
                 self.ttlwidgets.append(
                     Entry(self, textvariable=ttlvar, justify=LEFT))
@@ -592,7 +630,7 @@ class window(Tk):
         ).pack(padx=20, anchor="w")
         # Demande la facon de choisir un titre pour le graphique
         Radiobutton(self, text="Entrée d'un titre personnalisé", command=TitleChoice,
-                    variable=ttlvalue, value=1).pack(anchor="w", padx=10)
+                    variable=ttlvalue, value=1).pack(anchor="w", padx=10, pady=10)
         Radiobutton(self, text="Choix d'une cellule contenant le titre", command=TitleChoice,
                     variable=ttlvalue, value=2).pack(anchor="w", padx=10)
         # Bouton de confirmation
