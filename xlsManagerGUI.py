@@ -411,7 +411,7 @@ class window(Tk):
             WinArgs()  # Récupération arguments (2e fenêtre)
 
         # Placement widgets args initialisation
-        feuilles = self.GetSheets()
+        feuilles = xlsReader.xlsData._GetSheets(self.FilePath)
         sheetChoice = StringVar()
         sheetChoice.set("")
 
@@ -579,7 +579,7 @@ class window(Tk):
             
         self.title("xlsReader : paramètres")
         # Placement widgets args initialisation
-        feuilles = self.GetSheets()
+        feuilles = xlsReader.xlsData._GetSheets(self.FilePath)
         sheetChoice = StringVar()
         sheetChoice.set("")
 
@@ -606,13 +606,6 @@ class window(Tk):
         for w in self.winfo_children():
             w.destroy()
         self.pack_propagate(0)
-
-    def GetSheets(self):
-        """
-        Permet de récupérer la liste des feuilles
-        """
-        with xlrd.open_workbook(self.FilePath, on_demand=True) as file:
-            return (file._sheet_names)
 
 
 def main():

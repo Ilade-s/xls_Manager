@@ -14,6 +14,9 @@ UTILISATION :
 FONCTIONS :
 ----------
     - Lecture : Lit le fichier xls, puis renvoie les données en matrice
+    - _GetSheets : permet d'obtenir la liste des feuilles du fichier ciblé par le chemin
+        - la classe xlsData n'a pas besoin d'être initialisée pour son utilisation
+        - méthode normalement utilisée uniquement pour l'affichage des feuilles disponibles (GUI)
 """
 import xlrd # Module de gestion mère xls
 
@@ -98,12 +101,29 @@ class xlsData:
 
         # Renvoi de la matrice
         return MatData
+    
+    def _GetSheets(FilePath):
+        """
+        Permet de récupérer la liste des feuilles
+        Ne sera pas affichée dans la GUI (méthode utilisée uniquement pour affichage) 
+        Sera peut être ajoutée dans la GUI si nécessaire/utile
+
+        PARAMETRE :
+            - FilePath : str
+                - chemin complet ou seulement le nom (si dans dossier courant/de travail)
+        
+        SORTIE :
+            - sheet names : list[str]
+                - liste des noms des feuilles de tableur contenue dans le fichier
+        """
+        with xlrd.open_workbook(FilePath, on_demand=True) as file:
+            return (file._sheet_names)
 
 if __name__=='__main__': # Test
     # Lecture de ExtractedData.xls
     xls = xlsData()
     mat = xls.Lecture()
-    xls = xlsData(0, "ExtractedData", TitleCell=(4,4))
+    xls = xlsData(0, "ExtractedData")
 
     mat = xls.Lecture(rowstart=0,colstart=0,colstop=3)
     print(mat)
