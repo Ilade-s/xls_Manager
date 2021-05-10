@@ -308,7 +308,7 @@ class window(Tk):
             try:
                 self.Rowstop = int(self.Rowstop.get())
             except Exception as e:
-                #print(e)
+                # print(e)
                 self.Rowstop = None
             try:
                 self.Colstart = int(self.Colstart.get())
@@ -475,11 +475,12 @@ class window(Tk):
             try:
                 self.Stop = int(self.Rowstop.get())
             except Exception as e:
-                #print(e)
-                self.Stop = None   
+                # print(e)
+                self.Stop = None
             # colonne des clés
             try:
-                assert int(self.KeyColbox.get()) not in self.DataCols, "Erreur : Colonne de clé dans les colonnes de données"
+                assert int(self.KeyColbox.get(
+                )) not in self.DataCols, "Erreur : Colonne de clé dans les colonnes de données"
                 self.KeyCol = int(self.KeyColbox.get())
             except Exception as e:
                 print(e)
@@ -488,11 +489,19 @@ class window(Tk):
                 WinArgs()  # réinitialisation fenêtre
                 return 0
             # colonnes de données
-            if len(self.DataCols)==0: # pas de colonnes de données choisies
+            if len(self.DataCols) == 0:  # pas de colonnes de données choisies
                 msgbox.showwarning(
                     "Colonnes de données invalides", "Aucune colonne de donnée n'a été chosie")
                 WinArgs()  # réinitialisation fenêtre
                 return 0
+            # Options de Tri
+            self.Sort = self.Sort.get()
+            if self.Sort:  # Tri demandé
+
+                pass
+            else:
+
+                pass
             # Affichage console des paramètres (debug)
             print("=======================================")
             print("Paramètres :")
@@ -517,22 +526,27 @@ class window(Tk):
             self.ColSort.set("1")
             # DataColumns
             self.DataCols = []
+
             def ConfirmDataCol():
                 """
                 Action de sauvegarde de la colonne sélectionnée après l'appui du bouton
                 """
                 if IntValidate(DataColbox.get()):
-                    if DataColbox.get()==self.KeyColbox.get():
-                        msgbox.showwarning("Colonne de donnée invalide","L'index choisi est le même que celui de la colonne de clé")
+                    if DataColbox.get() == self.KeyColbox.get():
+                        msgbox.showwarning(
+                            "Colonne de donnée invalide", "L'index choisi est le même que celui de la colonne de clé")
                         return 0
-                    if int(DataColbox.get())>=0 and int(DataColbox.get()) not in self.DataCols:
+                    if int(DataColbox.get()) >= 0 and int(DataColbox.get()) not in self.DataCols:
                         self.DataCols.append(int(DataColbox.get()))
                         ApercuDataCol['text'] = f"Apreçu colonnes : {str(self.DataCols)}"
-                        print(f"Colonne de donnée {int(DataColbox.get())} ajoutée")
+                        print(
+                            f"Colonne de donnée {int(DataColbox.get())} ajoutée")
                     else:
-                        msgbox.showwarning("Colonne de donnée invalide","L'index est invalide (inférieur à 0 ou déjà choisi)")
+                        msgbox.showwarning(
+                            "Colonne de donnée invalide", "L'index est invalide (inférieur à 0 ou déjà choisi)")
                 else:
-                    msgbox.showwarning("Colonne de donnée invalide","L'index est invalide (pas int)")
+                    msgbox.showwarning(
+                        "Colonne de donnée invalide", "L'index est invalide (pas int)")
                 DataColbox.set("1")
 
             def SortingOptions():
@@ -546,14 +560,20 @@ class window(Tk):
                     self.sortwidgets.append(
                         Label(self, text="Type de tri :", font=self.font))
                     self.sortwidgets[-1].pack(padx=10, anchor="w", pady=10)
+
+                    # Choix de l'index de la colonne de tri
+                    self.sortwidgets.append(
+                        Label(self, text="Colonne de tri (doit être une des colonnes de donnée) :",
+                              font=self.font))
+                    self.sortwidgets[-1].pack(padx=10, anchor="w", pady=10)
+
                 else:  # suppression des options de tri
                     for f in self.sortwidgets:
                         f.destroy()
                     self.sortwidgets = []
 
-
             self.ClearWindow()  # nettoyage fenêtre
-            self.geometry("{}x{}".format(600,650))
+            self.geometry("{}x{}".format(600, 650))
             self.title(f"{self.fonction} : récupération des arguments")
             # Widgets de récupération
             # Récupération intervalle des lignes
@@ -570,33 +590,34 @@ class window(Tk):
             Label(self, text="Colonne des clés :").pack(
                 pady=5, padx=10, anchor="w")
             self.KeyColbox = Spinbox(self, justify=LEFT, validate="key",
-                  validatecommand=(self.IntValid, "%P"), from_=.0, to=10000)
+                                     validatecommand=(self.IntValid, "%P"), from_=.0, to=10000)
             self.KeyColbox.set("0")
             self.KeyColbox.pack(pady=5, padx=10, anchor="w")
             # Colonnes de donnée
             Label(self, text="Colonne de données \n(entrer une colonne, puis appuyer sur Valider : recommencer autant de fois que nécessaire) :").pack(
                 pady=5, padx=10, anchor="w")
             DataColbox = Spinbox(self, justify=LEFT, validate="key",
-                  validatecommand=(self.IntValid, "%P"), from_=.0, to=10000)
+                                 validatecommand=(self.IntValid, "%P"), from_=.0, to=10000)
             DataColbox.set("1")
             DataColbox.pack(pady=5, padx=10, anchor="w")
             # Bouton de confirmation
-            Button(self, 
-                text="Valider colonne", command=ConfirmDataCol, width=20, state="normal"
-                ).pack(padx=10, pady=5, anchor="w")
-            ApercuDataCol = Label(self, text=f"Apreçu colonnes : {str(self.DataCols)}")
+            Button(self,
+                   text="Valider colonne", command=ConfirmDataCol, width=20, state="normal"
+                   ).pack(padx=10, pady=5, anchor="w")
+            ApercuDataCol = Label(
+                self, text=f"Apreçu colonnes : {str(self.DataCols)}")
             ApercuDataCol.pack(padx=10, pady=5, anchor="w")
             # Options de tri
             Label(self, text="Tri des valeurs :").pack(
                 pady=5, padx=5, anchor="w")
             Radiobutton(self, text="Oui", command=SortingOptions,
-                    variable=self.Sort, value=True).pack(anchor="w", padx=30)
+                        variable=self.Sort, value=True).pack(anchor="w", padx=30)
             Radiobutton(self, text="Non", command=SortingOptions,
                         variable=self.Sort, value=False).pack(anchor="w", padx=30)
             # Bouton de confirmation
             ExitButton = Button(
                 self, text="Confirmer", command=ConfirmationArgs, width=20, state="disabled")
-            ExitButton.place(x=260, y=600)
+            ExitButton.place(x=240, y=600)
 
         def ConfirmationInit():
             """
