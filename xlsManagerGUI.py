@@ -449,6 +449,7 @@ class window(Tk):
         Fenêtre pour le module d'xlsPlot
         """
         self.ttlwidgets = []
+        self.sortwidgets = []
         ttlvalue = IntVar()
         ttlvalue.set(1)
         tx = StringVar()
@@ -478,11 +479,18 @@ class window(Tk):
                 self.Stop = None   
             # colonne des clés
             try:
+                assert int(self.KeyColbox.get()) not in self.DataCols, "Erreur : Colonne de clé dans les colonnes de données"
                 self.KeyCol = int(self.KeyColbox.get())
             except Exception as e:
                 print(e)
                 msgbox.showwarning(
-                    "Colonne des clés invalide", "La valeur indiquée est invalide (laissé vide ?)")
+                    "Colonne des clés invalide", "La valeur indiquée est invalide (laissée vide ou déjà une colonne de donnée)")
+                WinArgs()  # réinitialisation fenêtre
+                return 0
+            # colonnes de données
+            if len(self.DataCols)==0: # pas de colonnes de données choisies
+                msgbox.showwarning(
+                    "Colonnes de données invalides", "Aucune colonne de donnée n'a été chosie")
                 WinArgs()  # réinitialisation fenêtre
                 return 0
             # Affichage console des paramètres (debug)
@@ -514,6 +522,9 @@ class window(Tk):
                 Action de sauvegarde de la colonne sélectionnée après l'appui du bouton
                 """
                 if IntValidate(DataColbox.get()):
+                    if DataColbox.get()==self.KeyColbox.get():
+                        msgbox.showwarning("Colonne de donnée invalide","L'index choisi est le même que celui de la colonne de clé")
+                        return 0
                     if int(DataColbox.get())>=0 and int(DataColbox.get()) not in self.DataCols:
                         self.DataCols.append(int(DataColbox.get()))
                         ApercuDataCol['text'] = f"Apreçu colonnes : {str(self.DataCols)}"
@@ -524,7 +535,25 @@ class window(Tk):
                     msgbox.showwarning("Colonne de donnée invalide","L'index est invalide (pas int)")
                 DataColbox.set("1")
 
+            def SortingOptions():
+                """
+                Action d'affichage, ou non, des options de tri des données
+                """
+                ExitButton['state'] = "normal"
+                if self.Sort.get():  # Affichage des options de tri
+                    # ajout widgets
+                    # Choix croissant ou décroissant
+                    self.sortwidgets.append(
+                        Label(self, text="Type de tri :", font=self.font))
+                    self.sortwidgets[-1].pack(padx=10, anchor="w", pady=10)
+                else:  # suppression des options de tri
+                    for f in self.sortwidgets:
+                        f.destroy()
+                    self.sortwidgets = []
+
+
             self.ClearWindow()  # nettoyage fenêtre
+            self.geometry("{}x{}".format(600,650))
             self.title(f"{self.fonction} : récupération des arguments")
             # Widgets de récupération
             # Récupération intervalle des lignes
@@ -557,10 +586,17 @@ class window(Tk):
                 ).pack(padx=10, pady=5, anchor="w")
             ApercuDataCol = Label(self, text=f"Apreçu colonnes : {str(self.DataCols)}")
             ApercuDataCol.pack(padx=10, pady=5, anchor="w")
+            # Options de tri
+            Label(self, text="Tri des valeurs :").pack(
+                pady=5, padx=5, anchor="w")
+            Radiobutton(self, text="Oui", command=SortingOptions,
+                    variable=self.Sort, value=True).pack(anchor="w", padx=30)
+            Radiobutton(self, text="Non", command=SortingOptions,
+                        variable=self.Sort, value=False).pack(anchor="w", padx=30)
             # Bouton de confirmation
             ExitButton = Button(
-                self, text="Confirmer", command=ConfirmationArgs, width=20, state="normal")
-            ExitButton.place(x=210, y=350)
+                self, text="Confirmer", command=ConfirmationArgs, width=20, state="disabled")
+            ExitButton.place(x=260, y=600)
 
         def ConfirmationInit():
             """
