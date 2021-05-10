@@ -448,6 +448,7 @@ class window(Tk):
         """
         Fenêtre pour le module d'xlsPlot
         """
+        self.SortCol = None
         self.ttlwidgets = []
         self.sortwidgets = []
         ttlvalue = IntVar()
@@ -489,7 +490,7 @@ class window(Tk):
                 WinArgs()  # réinitialisation fenêtre
                 return 0
             # colonnes de données
-            if len(self.DataCols) == 0:  # pas de colonnes de données choisies
+            if not self.DataCols:  # pas de colonnes de données choisies
                 msgbox.showwarning(
                     "Colonnes de données invalides", "Aucune colonne de donnée n'a été chosie")
                 WinArgs()  # réinitialisation fenêtre
@@ -497,11 +498,18 @@ class window(Tk):
             # Options de Tri
             self.Sort = self.Sort.get()
             if self.Sort:  # Tri demandé
-
-                pass
-            else:
-
-                pass
+                try:
+                    assert int(self.SortCol.get()) >= 0 and int(
+                        self.SortCol.get()) in self.DataCols, "Colonne de tri invalide"
+                    self.SortOptions = (
+                        self.Sort, self.SortingType.get(), int(self.SortCol.get()))
+                except Exception as e:
+                    print(e)
+                    msgbox.showwarning("Colonne de Tri invalide",
+                        "L'index de la colonne de tri est invalide (non spécifié ou inférieur à 0)")
+            else:  # Pas de tri demandé
+                # création paramètre qui sera ignoré car self.Sort == False
+                self.SortOptions = (self.Sort, False, 0)
             # Affichage console des paramètres (debug)
             print("=======================================")
             print("Paramètres :")
@@ -509,6 +517,7 @@ class window(Tk):
             print(f"\tLigne de fin : {self.Stop}")
             print(f"\tColonne des clés : {self.KeyCol}")
             print(f"\tColonnes de donnée : {self.DataCols}")
+            print(f"\tOptions de Tri : {self.SortOptions}")
             print("=======================================")
 
         def WinArgs():
@@ -531,6 +540,11 @@ class window(Tk):
                 """
                 Action de sauvegarde de la colonne sélectionnée après l'appui du bouton
                 """
+                # Dévérouillage options de tri
+                SortL['text'] = "Tri des valeurs"
+                SortB1['state'] = "normal"
+                SortB2['state'] = "normal"
+                # Vérifs Index valide
                 if IntValidate(DataColbox.get()):
                     if DataColbox.get() == self.KeyColbox.get():
                         msgbox.showwarning(
@@ -539,6 +553,8 @@ class window(Tk):
                     if int(DataColbox.get()) >= 0 and int(DataColbox.get()) not in self.DataCols:
                         self.DataCols.append(int(DataColbox.get()))
                         ApercuDataCol['text'] = f"Apreçu colonnes : {str(self.DataCols)}"
+                        if self.SortCol!=None:
+                            self.SortCol['values'] = self.DataCols
                         print(
                             f"Colonne de donnée {int(DataColbox.get())} ajoutée")
                     else:
@@ -555,18 +571,31 @@ class window(Tk):
                 """
                 ExitButton['state'] = "normal"
                 if self.Sort.get():  # Affichage des options de tri
+                    self.SortingType = BooleanVar()
                     # ajout widgets
                     # Choix croissant ou décroissant
                     self.sortwidgets.append(
                         Label(self, text="Type de tri :", font=self.font))
                     self.sortwidgets[-1].pack(padx=10, anchor="w", pady=10)
 
+                    self.sortwidgets.append(
+                        Radiobutton(self, text="Tri croissant",
+                                    variable=self.SortingType, value=False))
+                    self.sortwidgets[-1].pack(anchor="w", padx=30)
+
+                    self.sortwidgets.append(
+                        Radiobutton(self, text="Tri décroissant",
+                                    variable=self.SortingType, value=True))
+                    self.sortwidgets[-1].pack(anchor="w", padx=30)
                     # Choix de l'index de la colonne de tri
                     self.sortwidgets.append(
-                        Label(self, text="Colonne de tri (doit être une des colonnes de donnée) :",
+                        Label(self, text="Colonne de tri (choix dans la liste des colonnes de donnée) :",
                               font=self.font))
                     self.sortwidgets[-1].pack(padx=10, anchor="w", pady=10)
-
+                    self.SortCol = Combobox(self, justify=LEFT, values=self.DataCols,
+                                           state="readonly")
+                    self.SortCol.pack(pady=5, padx=10, anchor="w")
+                    self.sortwidgets.append(self.SortCol)
                 else:  # suppression des options de tri
                     for f in self.sortwidgets:
                         f.destroy()
@@ -608,12 +637,14 @@ class window(Tk):
                 self, text=f"Apreçu colonnes : {str(self.DataCols)}")
             ApercuDataCol.pack(padx=10, pady=5, anchor="w")
             # Options de tri
-            Label(self, text="Tri des valeurs :").pack(
-                pady=5, padx=5, anchor="w")
-            Radiobutton(self, text="Oui", command=SortingOptions,
-                        variable=self.Sort, value=True).pack(anchor="w", padx=30)
-            Radiobutton(self, text="Non", command=SortingOptions,
-                        variable=self.Sort, value=False).pack(anchor="w", padx=30)
+            SortL = Label(self, text="Tri des valeurs (entrer au moins une colonne de donnée avant) :")
+            SortL.pack(pady=5, padx=5, anchor="w")
+            SortB1 = Radiobutton(self, text="Oui", command=SortingOptions,
+                        variable=self.Sort, value=True, state="disabled")
+            SortB1.pack(anchor="w", padx=30)
+            SortB2 = Radiobutton(self, text="Non", command=SortingOptions,
+                        variable=self.Sort, value=False, state="disabled")
+            SortB2.pack(anchor="w", padx=30)
             # Bouton de confirmation
             ExitButton = Button(
                 self, text="Confirmer", command=ConfirmationArgs, width=20, state="disabled")
@@ -670,30 +701,23 @@ class window(Tk):
                 # ajout widgets
                 self.ttlwidgets.append(
                     Label(self, text="Titre :", font=self.font))
-                self.ttlwidgets[-1].pack(padx=10, anchor="w", pady=10)
-
                 self.ttlwidgets.append(
                     Entry(self, textvariable=ttlvar, justify=LEFT))
-                self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
             else:  # donc 2 : Choix d'une cellule (tuple)
-                # Demande la cellule contenant le titre
+                # Demande les coordonnées de la cellule contenant le titre
                 self.ttlwidgets.append(
                     Label(self, text="Placement titre :\ncoord x :", font=self.font))
-                self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
-
                 self.ttlwidgets.append(
                     Entry(self, textvariable=tx, justify=LEFT, validate="key",
                           validatecommand=(self.IntValid, "%P")))
-                self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
-
                 self.ttlwidgets.append(
                     Label(self, text="coord y :", font=self.font))
-                self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
-
                 self.ttlwidgets.append(
                     Entry(self, textvariable=ty, justify=LEFT, validate="key",
                           validatecommand=(self.IntValid, "%P")))
-                self.ttlwidgets[-1].pack(pady=5, padx=10, anchor="w")
+
+                for w in self.ttlwidgets: # boucle affichage
+                    w.pack(pady=5, padx=10, anchor="w")
 
         self.title("xlsReader : paramètres")
         # Placement widgets args initialisation
