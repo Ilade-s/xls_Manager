@@ -716,8 +716,8 @@ class window(Tk):
                     Entry(self, textvariable=ty, justify=LEFT, validate="key",
                           validatecommand=(self.IntValid, "%P")))
 
-                for w in self.ttlwidgets: # boucle affichage
-                    w.pack(pady=5, padx=10, anchor="w")
+            for w in self.ttlwidgets: # boucle affichage
+                w.pack(pady=5, padx=10, anchor="w")
 
         self.title("xlsReader : paramètres")
         # Placement widgets args initialisation
