@@ -485,15 +485,6 @@ class window(Tk):
                     "Colonne des clés invalide", "La valeur indiquée est invalide (laissé vide ?)")
                 WinArgs()  # réinitialisation fenêtre
                 return 0
-            # colonnes de données
-            try:
-                self.DataCols = [int(c) for c in self.DataCols.get().split(" ")]
-            except Exception as e:
-                print(e)
-                msgbox.showwarning(
-                    "Colonnes des données invalide", "Une ou plusieurs colonnes sont invalides (laissé vide ?)")
-                WinArgs()  # réinitialisation fenêtre
-                return 0
             # Affichage console des paramètres (debug)
             print("=======================================")
             print("Paramètres :")
@@ -507,11 +498,31 @@ class window(Tk):
             """
             Deuxième partie de la fenêtre, permet de récupérer les paramètres nécessaires à la fonction choisie
             """
+            # Rows
             self.Start = StringVar()
             self.Start.set("0")
             self.Stop = StringVar()
-            self.DataCols = StringVar()
-            self.DataCols.set("1")
+            # Sorting options
+            self.Sort = BooleanVar()
+            self.SortOrder = BooleanVar()
+            self.ColSort = StringVar()
+            self.ColSort.set("1")
+            # DataColumns
+            self.DataCols = []
+            def ConfirmDataCol():
+                """
+                Action de sauvegarde de la colonne sélectionnée après l'appui du bouton
+                """
+                if IntValidate(DataColbox.get()):
+                    if int(DataColbox.get())>=0 and int(DataColbox.get()) not in self.DataCols:
+                        self.DataCols.append(int(DataColbox.get()))
+                        ApercuDataCol['text'] = f"Apreçu colonnes : {str(self.DataCols)}"
+                        print(f"Colonne de donnée {int(DataColbox.get())} ajoutée")
+                    else:
+                        msgbox.showwarning("Colonne de donnée invalide","L'index est invalide (inférieur à 0 ou déjà choisi)")
+                else:
+                    msgbox.showwarning("Colonne de donnée invalide","L'index est invalide (pas int)")
+                DataColbox.set("1")
 
             self.ClearWindow()  # nettoyage fenêtre
             self.title(f"{self.fonction} : récupération des arguments")
@@ -534,7 +545,18 @@ class window(Tk):
             self.KeyColbox.set("0")
             self.KeyColbox.pack(pady=5, padx=10, anchor="w")
             # Colonnes de donnée
-
+            Label(self, text="Colonne de données \n(entrer une colonne, puis appuyer sur Valider : recommencer autant de fois que nécessaire) :").pack(
+                pady=5, padx=10, anchor="w")
+            DataColbox = Spinbox(self, justify=LEFT, validate="key",
+                  validatecommand=(self.IntValid, "%P"), from_=.0, to=10000)
+            DataColbox.set("1")
+            DataColbox.pack(pady=5, padx=10, anchor="w")
+            # Bouton de confirmation
+            Button(self, 
+                text="Valider colonne", command=ConfirmDataCol, width=20, state="normal"
+                ).pack(padx=10, pady=5, anchor="w")
+            ApercuDataCol = Label(self, text=f"Apreçu colonnes : {str(self.DataCols)}")
+            ApercuDataCol.pack(padx=10, pady=5, anchor="w")
             # Bouton de confirmation
             ExitButton = Button(
                 self, text="Confirmer", command=ConfirmationArgs, width=20, state="normal")
