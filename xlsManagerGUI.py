@@ -541,9 +541,8 @@ class window(Tk):
                 Action de sauvegarde de la colonne sélectionnée après l'appui du bouton
                 """
                 # Dévérouillage options de tri
-                SortL['text'] = "Tri des valeurs"
-                SortB1['state'] = "normal"
-                SortB2['state'] = "normal"
+                SortCheck['text'] = "Tri des valeurs"
+                SortCheck['state'] = "normal"
                 # Vérifs Index valide
                 if IntValidate(DataColbox.get()):
                     if DataColbox.get() == self.KeyColbox.get():
@@ -637,14 +636,10 @@ class window(Tk):
                 self, text=f"Apreçu colonnes : {str(self.DataCols)}")
             ApercuDataCol.pack(padx=10, pady=5, anchor="w")
             # Options de tri
-            SortL = Label(self, text="Tri des valeurs (entrer au moins une colonne de donnée avant) :")
-            SortL.pack(pady=5, padx=5, anchor="w")
-            SortB1 = Radiobutton(self, text="Oui", command=SortingOptions,
-                        variable=self.Sort, value=True, state="disabled")
-            SortB1.pack(anchor="w", padx=30)
-            SortB2 = Radiobutton(self, text="Non", command=SortingOptions,
-                        variable=self.Sort, value=False, state="disabled")
-            SortB2.pack(anchor="w", padx=30)
+            SortCheck = Checkbutton(self, text="Tri des valeurs (entrer au moins une colonne de donnée avant) :",
+                                variable=self.Sort, onvalue=True, offvalue=False, command=SortingOptions
+                                , state="disabled")
+            SortCheck.pack(anchor="w", padx=30)
             # Bouton de confirmation
             ExitButton = Button(
                 self, text="Confirmer", command=ConfirmationArgs, width=20, state="disabled")
