@@ -3,9 +3,8 @@ xlsManagerGUI (interface graphique des trois modules)
 ------------------
 
 MODULES UTILISABLES : 
-    - xlsPlot : création de graphiques à partir d'un fichier (à faire)
-    - xlsWriter : édition de fichier xls (en cours)
-    - xlsReader : lecture de fichier xls (terminé)
+    - xlsPlot : création de graphiques à partir d'un fichier
+    - xlsReader : lecture de fichier xls
 
 FONCTIONNEMENT :
     - Tout se passe dans l'interface graphique (ni console, ni python)
@@ -142,13 +141,6 @@ class window(Tk):
                 if self.warninglabel != None:
                     self.warninglabel.destroy()
                 classe = xlsReader.xlsData
-            elif value.get() == xlsWriter.__name__:  # xlsWriter
-                classe = xlsWriter.xlsWriter
-                self.FilePath = ""
-                ExitButton["state"] = "normal"
-                self.warninglabel = Label(
-                    self, text="Ne choisir un fichier uniquement si vous souhaitez le modifier \nPour créer un nouveau fichier, laisser vide", font=self.font, anchor=CENTER)
-                self.warninglabel.pack(pady=5)
             else:
                 classe = xlsReader.xlsData
             self.OpenButton.pack()
@@ -173,8 +165,6 @@ class window(Tk):
         # Boutons de choix de classe
         Radiobutton(self, text="xlsReader : lecture de fichier xls", command=IsChecked,
                     variable=value, value=xlsReader.__name__).pack(anchor="w", padx=10)
-        Radiobutton(self, text="xlsWriter : Edition de fichier xls", command=IsChecked,
-                    variable=value, value=xlsWriter.__name__).pack(anchor="w", padx=10)
         Radiobutton(self, text="xlsPlot : création de graphique", command=IsChecked,
                     variable=value, value=xlsPlot.__name__).pack(anchor="w", padx=10)
 
@@ -435,13 +425,6 @@ class window(Tk):
         ExitButton = Button(self, text="Confirmer",
                             command=ConfirmationInit, width=20)
         ExitButton.place(x=210, y=350)
-
-    def WinXlsWriter(self):
-        """
-        Fenêtre pour le module d'xlsWriter
-        """
-        self.title("xlsReader : paramètres")
-        # Placement widgets
 
     def WinXlsPlot(self):
         """
