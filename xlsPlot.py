@@ -68,7 +68,7 @@ class xlsDB:
             (rowx, columnx) = TitleCell
             self.Title = self.Data.cell_value(rowx, columnx)
 
-    def DiagrammeMultiBarres(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0, 20.0), PlotSave=(False, "plot")):
+    def DiagrammeMultiBarres(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(19.2, 10.8), PlotSave=(False, "plot")):
         """
         Permet de créer des diagrammes en barres pour comparer les éléments de une ou plusieurs colonnes de données
 
@@ -194,7 +194,7 @@ class xlsDB:
         else:    
             plt.show()
 
-    def DiagrammeMultiCirculaire(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(20.0, 20.0), PlotSave=(False, "plot")):
+    def DiagrammeMultiCirculaire(self, SortedElements=(False, False, 0), DataColumns=[3], KeyColumn=2, Start=15, Stop=None, TitleOffset=2, figSize=(19.2, 10.8), PlotSave=(False, "plot")):
         """
         Permet de créer un diagramme ciculaire afin de comparer des parts de valeur de clés
 

@@ -159,7 +159,7 @@ class window(Tk):
                 self.funcs[-1].pack(anchor="w", padx=10)
                 funcchoice.set(func)
 
-        self.geometry("550x400")
+        self.geometry("{}x{}".format(550, 400))
         self.title("xlsManager : choix fonction")
 
         # texte de présentation
@@ -252,7 +252,6 @@ class window(Tk):
                     path = fldialog.asksaveasfilename(initialdir=os.getcwd(), title="Sauvegarde résultat", filetypes=(
                         ("xls files (.xls)", "*.xls"), ("all files", "*.*")), defaultextension=".xls", initialfile="save")
                     filename = path.split("/")[-1][:-4]
-                    print(filename)
                     sheetname = askstring(
                         "Nom de feuille/sheet", "Nom de la feuille de tableur:")
                     try:
@@ -265,7 +264,7 @@ class window(Tk):
                         xls.AddData(dictretval, self.Colstart,
                                     self.Rowstart, autoSave=(True, filename))
                         msgbox.showinfo(
-                            "Sauvergarde réussie", "le résultat a été sauvegardé avec succès sous le nom "+filename)
+                            "Sauvergarde réussie", f"le résultat a été sauvegardé avec succès sous le nom {filename}")
                     except Exception as e:
                         print(e)
                         msgbox.showerror(
@@ -458,11 +457,80 @@ class window(Tk):
         tx.set("0")
         ty.set("0")
         ttlvar = StringVar()
+        TypeAffichage = BooleanVar()
+
+        def WinRetFunc():
+            """
+            Permet de choisir entre l'affichage du plot et la sauvegarde de la figure sous format .png
+            """
+            def Affichage():
+                """
+                Action après confirmation du choix d'affichage/de sauvegarde (appui du bouton)
+
+                TODO : Ajouter titleOffset à choisir (pour l'instant par défaut 2)
+                """
+                filename = ""
+                if TypeAffichage.get():  # Sauvegarde demandée
+                    path = fldialog.asksaveasfilename(initialdir=os.getcwd(), title="Sauvegarde résultat", filetypes=(
+                        ("Image", "*.png"), ("all files", "*.*")), defaultextension=".png", initialfile="plot")
+                    filename = path.split("/")[-1][:-4]
+                    if filename=="":
+                        msgbox.showwarning("Fichier non choisi", "Le choix de fichier a été annulé")
+                # Exécution fonction demandée
+                try:
+                    if self.fonction == "DiagrammeMultiBarres":
+                        self.xls.DiagrammeMultiBarres(self.SortOptions, self.DataCols, self.KeyCol,
+                                                        self.Start, self.Stop, self.ttlOffset, 
+                                                        PlotSave=(TypeAffichage.get(), filename))
+                    elif self.fonction == "DiagrammeMultiCirculaire":
+                        self.xls.DiagrammeMultiCirculaire(self.SortOptions, self.DataCols, self.KeyCol,
+                                                        self.Start, self.Stop, self.ttlOffset, 
+                                                        PlotSave=(TypeAffichage.get(), filename))
+                except Exception as e:
+                    print(e)
+                    msgbox.showerror(
+                        "Affichage impossible", "Une erreur à été rencontrée lors de l'exécution de la fonction\nVeuillez réessayer")
+
+                if TypeAffichage.get():  # Sauvegarde
+                    msgbox.showinfo("Sauvegarde terminée", f"Le plot a été sauvegardé sous le nom {filename}")
+                
+                WinRetFunc() # Retour à la fenêtre précédente (choix de récupération)
+
+            self.ClearWindow()  # Efface la fenêtre précédente
+            self.title("Retour du résultat de la fonction")
+            self.geometry("{}x{}".format(550, 200))
+            Label(self, text="Veuillez choisir un moyen de récupérer le plot/graphique :",
+                  font=self.titlefont).pack(padx=10, pady=5, anchor=CENTER)
+            Label(self, text="(Vous pourrez retourner à cette fenêtre après avoir fait un choix)",
+                  font=self.font).pack(padx=10, anchor=CENTER)
+            # Demande la facon de récupérer le plot
+            Radiobutton(self, text="Affichage direct",
+                        command=lambda: ExitButton.configure(state="normal"),
+                        variable=TypeAffichage, value=False).pack(padx=10, pady=5, anchor=CENTER)
+            Radiobutton(self, text="Sauvegarde image du plot",
+                        command=lambda: ExitButton.configure(state="normal"),
+                        variable=TypeAffichage, value=True).pack(padx=10, pady=5, anchor=CENTER)
+            # Bouton de confirmation
+            ExitButton = Button(self, text="Confirmer",
+                                command=Affichage, width=20, state="disabled")
+            ExitButton.place(x=140, y=150)
+            # Bouton pour quitter l'interface
+            Button(self, text="Quitter", command=exit,
+                   width=20).place(x=280, y=150)
 
         def ConfirmationArgs():
             """
             Action lors de la confirmation des paramètres
             """
+            # Title offset
+            try:
+                self.ttlOffset = int(self.ttlOffset.get())
+            except Exception as e:
+                print(e)
+                msgbox.showwarning(
+                    "Offset titre invalide", "La valeur indiquée est invalide (laissé vide ?)")
+                WinArgs()  # réinitialisation fenêtre
+                return 0
             # ligne de départ
             try:
                 self.Start = int(self.Start.get())
@@ -474,7 +542,7 @@ class window(Tk):
                 return 0
             # ligne de fin
             try:
-                self.Stop = int(self.Rowstop.get())
+                self.Stop = int(self.Stop.get())
             except Exception as e:
                 # print(e)
                 self.Stop = None
@@ -506,7 +574,7 @@ class window(Tk):
                 except Exception as e:
                     print(e)
                     msgbox.showwarning("Colonne de Tri invalide",
-                        "L'index de la colonne de tri est invalide (non spécifié ou inférieur à 0)")
+                                       "L'index de la colonne de tri est invalide (non spécifié ou inférieur à 0)")
             else:  # Pas de tri demandé
                 # création paramètre qui sera ignoré car self.Sort == False
                 self.SortOptions = (self.Sort, False, 0)
@@ -519,14 +587,18 @@ class window(Tk):
             print(f"\tColonnes de donnée : {self.DataCols}")
             print(f"\tOptions de Tri : {self.SortOptions}")
             print("=======================================")
+            # Appel fenêtre de retour/d'affichage
+            WinRetFunc()
 
         def WinArgs():
             """
             Deuxième partie de la fenêtre, permet de récupérer les paramètres nécessaires à la fonction choisie
             """
             # Rows
+            self.ttlOffset = StringVar()
+            self.ttlOffset.set("1")
             self.Start = StringVar()
-            self.Start.set("0")
+            self.Start.set("1")
             self.Stop = StringVar()
             # Sorting options
             self.Sort = BooleanVar()
@@ -540,9 +612,6 @@ class window(Tk):
                 """
                 Action de sauvegarde de la colonne sélectionnée après l'appui du bouton
                 """
-                # Dévérouillage options de tri
-                SortCheck['text'] = "Tri des valeurs"
-                SortCheck['state'] = "normal"
                 # Vérifs Index valide
                 if IntValidate(DataColbox.get()):
                     if DataColbox.get() == self.KeyColbox.get():
@@ -552,7 +621,7 @@ class window(Tk):
                     if int(DataColbox.get()) >= 0 and int(DataColbox.get()) not in self.DataCols:
                         self.DataCols.append(int(DataColbox.get()))
                         ApercuDataCol['text'] = f"Apreçu colonnes : {str(self.DataCols)}"
-                        if self.SortCol!=None:
+                        if self.SortCol != None:
                             self.SortCol['values'] = self.DataCols
                         print(
                             f"Colonne de donnée {int(DataColbox.get())} ajoutée")
@@ -563,6 +632,9 @@ class window(Tk):
                     msgbox.showwarning(
                         "Colonne de donnée invalide", "L'index est invalide (pas int)")
                 DataColbox.set("1")
+                # Dévérouillage options de tri
+                SortCheck['text'] = "Tri des valeurs"
+                SortCheck['state'] = "normal"
 
             def SortingOptions():
                 """
@@ -592,7 +664,7 @@ class window(Tk):
                               font=self.font))
                     self.sortwidgets[-1].pack(padx=10, anchor="w", pady=10)
                     self.SortCol = Combobox(self, justify=LEFT, values=self.DataCols,
-                                           state="readonly")
+                                            state="readonly")
                     self.SortCol.pack(pady=5, padx=10, anchor="w")
                     self.sortwidgets.append(self.SortCol)
                 else:  # suppression des options de tri
@@ -612,6 +684,11 @@ class window(Tk):
             Label(self, text="Ligne de fin (laisser vide pour ligne maximale) :").pack(
                 pady=5, padx=10, anchor="w")
             Entry(self, textvariable=self.Stop, justify=LEFT, validate="key",
+                  validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
+            # Récupération Offset des titres
+            Label(self, text="Offset des titres (écart par rapport à la ligne de départ) :").pack(
+                pady=5, padx=10, anchor="w")
+            Entry(self, textvariable=self.ttlOffset, justify=LEFT, validate="key",
                   validatecommand=(self.IntValid, "%P")).pack(pady=5, padx=10, anchor="w")
             # Récupération colonnes à exploiter
             # Colonne des clés
@@ -637,8 +714,7 @@ class window(Tk):
             ApercuDataCol.pack(padx=10, pady=5, anchor="w")
             # Options de tri
             SortCheck = Checkbutton(self, text="Tri des valeurs (entrer au moins une colonne de donnée avant) :",
-                                variable=self.Sort, onvalue=True, offvalue=False, command=SortingOptions
-                                , state="disabled")
+                                    variable=self.Sort, onvalue=True, offvalue=False, command=SortingOptions, state="disabled")
             SortCheck.pack(anchor="w", padx=30)
             # Bouton de confirmation
             ExitButton = Button(
@@ -711,7 +787,7 @@ class window(Tk):
                     Entry(self, textvariable=ty, justify=LEFT, validate="key",
                           validatecommand=(self.IntValid, "%P")))
 
-            for w in self.ttlwidgets: # boucle affichage
+            for w in self.ttlwidgets:  # boucle affichage
                 w.pack(pady=5, padx=10, anchor="w")
 
         self.title("xlsReader : paramètres")
