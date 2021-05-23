@@ -457,27 +457,29 @@ class window(Tk):
                     path = fldialog.asksaveasfilename(initialdir=os.getcwd(), title="Sauvegarde résultat", filetypes=(
                         ("Image", "*.png"), ("all files", "*.*")), defaultextension=".png", initialfile="plot")
                     filename = path.split("/")[-1][:-4]
-                    if filename=="":
-                        msgbox.showwarning("Fichier non choisi", "Le choix de fichier a été annulé")
+                    if filename == "":
+                        msgbox.showwarning(
+                            "Fichier non choisi", "Le choix de fichier a été annulé")
                 # Exécution fonction demandée
                 try:
                     if self.fonction == "DiagrammeMultiBarres":
                         self.xls.DiagrammeMultiBarres(self.SortOptions, self.DataCols, self.KeyCol,
-                                                        self.Start, self.Stop, self.ttlOffset, 
-                                                        PlotSave=(TypeAffichage.get(), filename))
+                                                      self.Start, self.Stop, self.ttlOffset,
+                                                      PlotSave=(TypeAffichage.get(), filename))
                     elif self.fonction == "DiagrammeMultiCirculaire":
                         self.xls.DiagrammeMultiCirculaire(self.SortOptions, self.DataCols, self.KeyCol,
-                                                        self.Start, self.Stop, self.ttlOffset, 
-                                                        PlotSave=(TypeAffichage.get(), filename))
+                                                          self.Start, self.Stop, self.ttlOffset,
+                                                          PlotSave=(TypeAffichage.get(), filename))
                 except Exception as e:
                     print(e)
                     msgbox.showerror(
                         "Affichage impossible", "Une erreur à été rencontrée lors de l'exécution de la fonction\nVeuillez réessayer")
 
                 if TypeAffichage.get():  # Sauvegarde
-                    msgbox.showinfo("Sauvegarde terminée", f"Le plot a été sauvegardé sous le nom {filename}")
-                
-                WinRetFunc() # Retour à la fenêtre précédente (choix de récupération)
+                    msgbox.showinfo(
+                        "Sauvegarde terminée", f"Le plot a été sauvegardé sous le nom {filename}")
+
+                WinRetFunc()  # Retour à la fenêtre précédente (choix de récupération)
 
             self.ClearWindow()  # Efface la fenêtre précédente
             self.title("Retour du résultat de la fonction")
@@ -553,11 +555,13 @@ class window(Tk):
                     assert int(self.SortCol.get()) >= 0 and int(
                         self.SortCol.get()) in self.DataCols, "Colonne de tri invalide"
                     self.SortOptions = (
-                        self.Sort, self.SortingType.get(), int(self.SortCol.get()))
+                        self.Sort, self.SortingType.get(), self.DataCols.index(int(self.SortCol.get())))
                 except Exception as e:
                     print(e)
                     msgbox.showwarning("Colonne de Tri invalide",
                                        "L'index de la colonne de tri est invalide (non spécifié ou inférieur à 0)")
+                    WinArgs()
+                    return 0
             else:  # Pas de tri demandé
                 # création paramètre qui sera ignoré car self.Sort == False
                 self.SortOptions = (self.Sort, False, 0)
@@ -566,6 +570,7 @@ class window(Tk):
             print("Paramètres :")
             print(f"\tLigne de départ : {self.Start}")
             print(f"\tLigne de fin : {self.Stop}")
+            print(f"\tOffset des titres : {self.ttlOffset}")
             print(f"\tColonne des clés : {self.KeyCol}")
             print(f"\tColonnes de donnée : {self.DataCols}")
             print(f"\tOptions de Tri : {self.SortOptions}")
